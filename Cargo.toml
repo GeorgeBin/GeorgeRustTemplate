@@ -7,4 +7,5 @@ edition = "2024"
 slint = "1.12.1"
 
 [build-dependencies]
-slint-build = "1.12.1"
+slint-build = "1.12.1" # UI框架
+winresource = "0.1.19" # 给 exe 添加图标
