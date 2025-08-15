@@ -1,6 +1,6 @@
 [package]
 name = "GeorgeRustTemplate"
-version = "0.1.0"
+version = "0.0.1"
 edition = "2024"
 
 [dependencies]
@@ -8,4 +8,11 @@ slint = "1.12.1"
 
 [build-dependencies]
 slint-build = "1.12.1" # UI框架
-winresource = "0.1.19" # 给 exe 添加图标
+winresource = "0.1.23" # 给 exe 添加图标
+
+
+# macOS 打包
+[package.metadata.bundle]
+identifier = "com.georgebindragon.rust.template"
+icon = ["ui/static/logo/macOS.icns"]
+osx_url_schemes = ["com.georgebindragon.rust.template"]
