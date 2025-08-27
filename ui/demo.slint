@@ -1,0 +1,67 @@
+import { Button, VerticalBox } from "std-widgets.slint";
+
+// 可以单独封装，在 Window 里用类名调用
+export global Backend {
+    in-out property <int> number; // 属性
+    callback btn_clicked; // 回调
+    callback btn_clicked2(num: int); // 回调（参数）
+    callback btn_clicked3(num: int) -> int; // 回调（参数）-> 返回值
+}
+
+export component DemoWindow inherits Window {
+
+    // 直接在 Window 里声明，用 root.xxx 访问
+    in-out property <int> counter: 42; // 属性：可以在 slint 内操作，也可以在 rust 内通过 set、get 方法操作
+    callback increase-value(); // 回调：可以在 rust 内通过 on_xxx 方法操作
+
+    VerticalBox {
+
+        Text {
+            text: "内部-root";
+            color: green;
+        }
+
+        Button {
+            text: "Button-increase-value：" + root.counter;
+            clicked => {
+                root.increase-value();
+            }
+        }
+
+        Button {
+            text: "Button-通过数据绑定自动更新 UI：\{root.counter}";
+            clicked => {
+                root.counter = (root.counter - 1);
+            }
+        }
+
+        Text {
+            text: "外部 Backend：" + Backend.number;
+        }
+
+        Button {
+            text: "按钮-点击事件：回调";
+            clicked => {
+                Backend.btn_clicked();
+            }
+        }
+
+        Button {
+            text: "按钮-点击事件：回调（参数）";
+            clicked => {
+                Backend.btn_clicked2(Backend.number);
+            }
+        }
+
+        Button {
+            text: "按钮-点击事件：回调（参数）-> 返回值";
+            clicked => {
+                Backend.number = Backend.btn_clicked3(Backend.number);
+            }
+        }
+
+        Image {
+            source: @image-url("res/logo/logo.png");
+        }
+    }
+}
