@@ -2,7 +2,7 @@
 extern crate winresource;
 
 fn main() {
-    slint_build::compile("ui/main.slint").expect("Slint build failed");
+    slint_build::compile("ui/demo.slint").expect("Slint build failed");
 
     // 给 exe 添加图标
     if std::env::var("CARGO_CFG_TARGET_OS").unwrap() == "windows" {
