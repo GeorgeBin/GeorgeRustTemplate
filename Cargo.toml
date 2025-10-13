@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 slint = "1.12.1"
+protobuf = "3.7.2"
 
 [build-dependencies]
 slint-build = "1.12.1" # UI框架
