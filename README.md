@@ -5,7 +5,7 @@ Rust 程序模板工程
 
 ### IDE
 
-RustRover 2025.1.3
+RustRover 2025.2.1
 
 插件：Slint
 
