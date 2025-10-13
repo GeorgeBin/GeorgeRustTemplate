@@ -4,8 +4,9 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod demo;
-mod lib;
 mod util;
+mod ui;
+mod protos;
 
 // 将 .slint 编译后的 Rust 模块引入到代码里
 slint::include_modules!();
@@ -39,8 +40,13 @@ fn main() -> Result<(), slint::PlatformError> {
     // });
 
     {
-        util::is_valid_ipv4("192.168.1.1".to_string());
+        let valid=util::is_valid_ipv4("192.168.1.1".to_string());
+        println!("is valid ipv4 {valid}");
         demo::impl_logic_for_backend(window.as_weak().clone());
     }
+
+    ui::view::res(); // 引用方式一：在目录同层，创建同名 rs 文件，声明 mod
+    protos::test::test_protos(); // 引用方式二：在目录内，创建 mod.rs 文件，声明 mod
+    
     window.run()
 }
