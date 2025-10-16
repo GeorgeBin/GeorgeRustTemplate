@@ -1,0 +1,42 @@
+import { Button, VerticalBox,HorizontalBox, TextEdit } from "std-widgets.slint";
+
+export component NtpWindow inherits Window {
+    // 输入框内容（NTP 地址）
+    in-out property <string> ntp_address: "";
+    // 显示区域内容（结果或错误信息）
+    in-out property <string> result_text: "请输入 NTP 地址，然后点击查询";
+
+    // 点击按钮时触发的回调
+    callback request-ntp();
+
+    VerticalBox {
+        spacing: 16px;
+
+        // 第一行：输入框 + 按钮
+        HorizontalBox {
+            spacing: 8px;
+
+            TextEdit {
+                text: ntp_address;
+                accessible-placeholder-text:  "输入 NTP 地址";
+            }
+
+            Button {
+                text: "查询时间";
+                clicked => {
+                    root.request-ntp();
+                }
+            }
+        }
+
+        // 第二行：显示查询结果
+        Text {
+            text: result_text;
+        }
+    }
+
+    // 可选：窗口标题和尺寸
+    title: "NTP 查询";
+    width: 400px;
+    height: 160px;
+}

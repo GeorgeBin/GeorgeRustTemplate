@@ -1,0 +1,48 @@
+[package]
+name = "demo"
+version = "0.1.0"
+edition = "2024"
+
+
+[dependencies]
+tokio = { workspace = true }
+slint = "1.12.1"
+protobuf = "3.7.2"
+hex = "0.4.3"
+bytes = "1.10.1"
+
+[build-dependencies]
+slint-build = "1.12.1" # UI框架
+winresource = "0.1.23" # 给 exe 添加图标
+
+
+
+# 打包
+
+# 优化打包体积
+[profile.release]
+opt-level = "z"        # 体积优先优化（"s" 次之，"z" 更小）
+lto = true             # 启用链接时优化 (Link Time Optimization)
+codegen-units = 1      # 降低并行代码生成数，提升优化效果
+panic = "abort"        # 避免引入 unwinding 代码
+strip = true           # 编译完成后去掉符号表（等同于手动 strip）
+
+# macOS 打包
+[package.metadata.bundle]
+identifier = "com.georgebindragon.rust.template"
+icon = ["ui/static/logo/macOS.icns"]
+osx_url_schemes = ["com.georgebindragon.rust.template"]
+
+
+[lib]
+crate-type = ["cdylib"]
+
+
+[target.'cfg(target_os = "android")'.dependencies]
+jni = "0.21"
+rustix = { version = "1", features = ["pipe"] }
+log = "0.4.14"
+ndk = { version = "0.9", features = ["api-level-23"] }
+ndk-context = "0.1.1"
+android_logger = "0.15"
+android-activity = { version = "0.6", features = ["native-activity"] }
