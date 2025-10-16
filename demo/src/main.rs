@@ -3,10 +3,6 @@
 // 在 Windows 发行版本中，除了 Slint 窗口外，还需阻止控制台窗口。其他平台忽略此设置。
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use crate::client::TcpClient;
-use tokio::io;
-
-mod client;
 mod demo;
 mod protos;
 mod ui;
@@ -25,9 +21,7 @@ fn main() -> Result<(), slint::PlatformError> {
     window.on_increase_value(move || {
         let window = window_weak.unwrap();
         let i = window.get_counter();
-
-        println!("click login");
-        let _ = client::login();
+        println!("click on_increase_value");
         window.set_counter(i + 1)
     });
 
