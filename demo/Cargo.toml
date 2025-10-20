@@ -6,7 +6,7 @@ edition = "2024"
 
 [dependencies]
 tokio = { workspace = true }
-slint = "1.12.1"
+slint = { workspace = true }
 protobuf = "3.7.2"
 hex = "0.4.3"
 bytes = "1.10.1"
