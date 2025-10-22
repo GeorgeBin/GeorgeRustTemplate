@@ -6,7 +6,7 @@
 mod demo;
 mod protos;
 mod ui;
-mod util;
+
 mod callback;
 
 // 将 .slint 编译后的 Rust 模块引入到代码里
@@ -42,8 +42,11 @@ fn main() -> Result<(), slint::PlatformError> {
     // });
 
     {
-        let valid = util::is_valid_ipv4("192.168.1.1".to_string());
+        // 工程内 cargo create 引用：core
+        core::add(1, 2);
+        let valid = core::utils::is_valid_ipv4("192.168.1.1".to_string());
         println!("is valid ipv4 {valid}");
+
         demo::impl_logic_for_backend(window.as_weak().clone());
     }
 
