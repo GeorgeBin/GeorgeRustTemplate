@@ -6,13 +6,13 @@ edition = "2024"
 
 [dependencies]
 corelib = { path = "../corelib" }
-tokio = { workspace = true }
 slint = { workspace = true }
-protobuf = "3.7.2"
-hex = "0.4.3"
-bytes = "1.10.1"
 chrono = "0.4.42"
-thiserror = "2.0.17"
+#tokio = { workspace = true }
+protobuf = "3.7.2"
+#hex = "0.4.3"
+#bytes = "1.10.1"
+#thiserror = "2.0.17"
 
 [build-dependencies]
 slint-build = "1.12.1" # UI框架
@@ -35,10 +35,6 @@ strip = true           # 编译完成后去掉符号表（等同于手动 strip�
 identifier = "com.georgebindragon.rust.template"
 icon = ["ui/static/logo/macOS.icns"]
 osx_url_schemes = ["com.georgebindragon.rust.template"]
-
-
-[lib]
-crate-type = ["cdylib"]
 
 
 [target.'cfg(target_os = "android")'.dependencies]

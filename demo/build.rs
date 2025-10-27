@@ -2,7 +2,8 @@
 extern crate winresource;
 
 fn main() {
-    slint_build::compile("ware/slint/demo.slint").expect("Slint build failed");
+    slint_build::compile("ware/slint/ntp.slint").expect("Slint build failed");
+    // slint_build::compile("ware/slint/demo.slint").expect("Slint build failed");
     // slint_build::compile("ware/slint/main.slint").expect("Slint build failed");
 
     // 给 exe 添加图标

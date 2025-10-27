@@ -1,0 +1,35 @@
+import { Button, VerticalBox, HorizontalBox, LineEdit } from "std-widgets.slint";
+
+export component NTPWindow inherits Window {
+
+    in-out property <string> show_text: "结果";
+    in-out property <string> input_text: "ntp1.aliyun.com";
+    callback click();
+
+    VerticalBox {
+        min-height: 300px;
+        min-width: 400px;
+
+        HorizontalBox {
+            height: 60px;
+
+            LineEdit {
+                min-width: 200px;
+                horizontal-alignment: left;
+                text <=> input_text;
+                placeholder-text: "请输入 NTP 服务器地址（不包含端口）";
+            }
+
+            Button {
+                text: " 获取";
+                clicked => {
+                    root.click();
+                }
+            }
+        }
+
+        Text {
+            text: show_text;
+        }
+    }
+}
