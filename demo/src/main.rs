@@ -3,8 +3,6 @@
 // 在 Windows 发行版本中，除了 Slint 窗口外，还需阻止控制台窗口。其他平台忽略此设置。
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::time::SystemTime;
-
 mod demo;
 mod protos;
 mod ui;

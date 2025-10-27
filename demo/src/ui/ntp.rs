@@ -1,6 +1,6 @@
 use crate::NTPWindow;
 use corelib::ntp::NtpError;
-use slint::{ComponentHandle, Weak};
+use slint::Weak;
 use std::time::SystemTime;
 
 pub fn get_time(ui_weak: Weak<NTPWindow>) {
