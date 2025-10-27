@@ -1,0 +1,10 @@
+# uniffi-rs 配置
+
+# Kotlin 部分
+[bindings.kotlin]
+
+# Kotlin 代码包名
+package_name = "com.george.rust.shared.xxx"
+
+# Kotlin 代码内加载的 so 文件名，实际的 .so 文件名通常是 'lib' + cdylib_name + '.so'
+cdylib_name = "rXxx"
