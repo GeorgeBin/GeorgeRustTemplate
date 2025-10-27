@@ -3,5 +3,30 @@ name = "executable"
 version = "0.1.0"
 edition = "2024"
 
+
+# build
+
 [dependencies]
+corelib = { path = "../corelib" }
 slint = { workspace = true }
+
+[build-dependencies]
+slint-build = "1.12.1" # UI框架
+winresource = "0.1.23" # 给 exe 添加图标
+
+
+# 打包：Windows、macOS-Intel
+
+# 优化打包体积
+[profile.release]
+opt-level = "z"        # 体积优先优化（"s" 次之，"z" 更小）
+lto = true             # 启用链接时优化 (Link Time Optimization)
+codegen-units = 1      # 降低并行代码生成数，提升优化效果
+panic = "abort"        # 避免引入 unwinding 代码
+strip = true           # 编译完成后去掉符号表（等同于手动 strip）
+
+# macOS 打包
+[package.metadata.bundle]
+identifier = "com.georgebindragon.rust.template"
+icon = ["executable/ware/logo/macOS.icns"] # 路径是相对工程根目录的
+osx_url_schemes = ["com.georgebindragon.rust.template"]

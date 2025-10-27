@@ -8,19 +8,17 @@ edition = "2024"
 corelib = { path = "../corelib" }
 slint = { workspace = true }
 chrono = "0.4.42"
-#tokio = { workspace = true }
+# tokio = { workspace = true }
 protobuf = "3.7.2"
-#hex = "0.4.3"
-#bytes = "1.10.1"
-#thiserror = "2.0.17"
+# hex = "0.4.3"
+# bytes = "1.10.1"
+# thiserror = "2.0.17"
 
 [build-dependencies]
 slint-build = "1.12.1" # UI框架
 winresource = "0.1.23" # 给 exe 添加图标
 
-
-
-# 打包
+# 打包：Windows、macOS-Intel
 
 # 优化打包体积
 [profile.release]
@@ -33,15 +31,5 @@ strip = true           # 编译完成后去掉符号表（等同于手动 strip�
 # macOS 打包
 [package.metadata.bundle]
 identifier = "com.georgebindragon.rust.template"
-icon = ["ui/static/logo/macOS.icns"]
+icon = ["demo/ware/logo/macOS.icns"] # 路径是相对工程根目录的
 osx_url_schemes = ["com.georgebindragon.rust.template"]
-
-
-[target.'cfg(target_os = "android")'.dependencies]
-jni = "0.21"
-rustix = { version = "1", features = ["pipe"] }
-log = "0.4.14"
-ndk = { version = "0.9", features = ["api-level-23"] }
-ndk-context = "0.1.1"
-android_logger = "0.15"
-android-activity = { version = "0.6", features = ["native-activity"] }
