@@ -1,10 +1,13 @@
 [workspace]
 members = [
-    "core",
+    "corelib",
     "demo",
     "executable",
     "shared"
 ]
+
+resolver = "3"
+
 
 # 公共依赖
 [workspace.dependencies]

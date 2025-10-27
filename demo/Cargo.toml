@@ -5,12 +5,14 @@ edition = "2024"
 
 
 [dependencies]
-core = { path = "../core" }
+corelib = { path = "../corelib" }
 tokio = { workspace = true }
 slint = { workspace = true }
 protobuf = "3.7.2"
 hex = "0.4.3"
 bytes = "1.10.1"
+chrono = "0.4.42"
+thiserror = "2.0.17"
 
 [build-dependencies]
 slint-build = "1.12.1" # UI框架

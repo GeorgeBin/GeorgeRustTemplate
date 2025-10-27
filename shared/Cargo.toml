@@ -5,12 +5,12 @@ edition = "2024"
 
 [lib]
 crate-type = ["cdylib"] # Android 用 .so
-name = "shared"  # 库名称：生成 so 的文件名
+name = "rsShared"  # 库名称：生成 so 的文件名
 
 [dependencies]
-core = { path = "../core" }
+corelib = { path = "../corelib" }
 uniffi = { workspace = true, features = [ "cli" ]  }
-serde = { version = "1.0.219", features = ["derive"] }
+# serde = { version = "1.0.219", features = ["derive"] }
 
 [build-dependencies]
 uniffi = { workspace = true, features = [ "build" ] }
