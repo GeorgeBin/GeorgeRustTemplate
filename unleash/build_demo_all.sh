@@ -34,6 +34,12 @@ for TARGET in "${TARGETS[@]}"; do
         OUT_DIR="build/${TARGET}/${MODE}"
         OUT_APP="${OUT_DIR}/${PACKAGE}.app"
 
+        # 删除目标（如果存在）
+        if [ -e "$OUT_APP" ]; then
+            echo "删除已存在的目标应用程序..."
+            rm -rf "$OUT_APP"
+        fi
+
         mkdir -p "$OUT_DIR"
         cp -r "$SRC_APP" "$OUT_APP"
         echo "✅ macOS 应用输出: $OUT_APP"
