@@ -5,16 +5,20 @@ set -e
 # 🌍 配置部分
 # ==========================
 PACKAGE="demo"           # Cargo.toml 中的 package 名称
-MODE="release"           # 可选: debug / release
+MODE="release"           # 编译类型: debug / release
 TARGETS=(
-    "x86_64-apple-darwin"   # macOS Intel
-#    "aarch64-apple-darwin"  # macOS Apple Silicon
+    # 需要编译的平台列表
+    # macOS
+    "x86_64-apple-darwin"
+    #    "aarch64-apple-darwin"
+     # Windows
+    "x86_64-pc-windows-gnu"
+    #    "x86_64-pc-windows-msvc"
+    # Linux
+    #    "x86_64-unknown-linux-gnu"
+)
 
-    "x86_64-pc-windows-gnu" # Windows
-#    "x86_64-pc-windows-msvc"
 
-#    "x86_64-unknown-linux-gnu" # Linux
-)2
 # ==========================
 
 echo "🚀 开始跨平台构建: ${PACKAGE} (${MODE} 模式)"
