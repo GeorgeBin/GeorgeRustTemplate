@@ -112,3 +112,12 @@ cargo bundle --package demo --release --target x86_64-apple-darwin
 
 
 
+Android 端使用：
+
+生成 so 文件、kt 文件
+
+拷贝 kt 文件
+
+拷贝 so 文件
+
+添加依赖：implementation "net.java.dev.jna:jna:5.12.0@aar"
