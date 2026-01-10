@@ -7,12 +7,12 @@ edition = "2024"
 # build
 
 [dependencies]
-corelib = { path = "../corelib" }
-slint = { workspace = true }
+#corelib = { path = "../corelib" }
+#slint = { workspace = true }
 
 [build-dependencies]
-slint-build = "1.12.1" # UI框架
-winresource = "0.1.23" # 给 exe 添加图标
+#slint-build = "1.12.1" # UI框架
+#winresource = "0.1.23" # 给 exe 添加图标
 
 
 # 打包：Windows、macOS-Intel
