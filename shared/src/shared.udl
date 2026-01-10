@@ -1,3 +1,0 @@
-namespace shared {
-boolean is_valid_ipv4(string addr);
-};
