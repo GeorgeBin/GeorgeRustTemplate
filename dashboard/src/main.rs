@@ -1,24 +1,24 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::sync::Arc;
-use tokio::sync::Mutex;
-use tracing::{info, debug};
-use slint::{ComponentHandle, Model};
 #[cfg(target_os = "macos")]
 use slint::winit_030::winit::platform::macos::WindowAttributesExtMacOS;
+use slint::{ComponentHandle, Model};
+use std::sync::Arc;
+use tokio::sync::Mutex;
+use tracing::{debug, info};
 
 // Define application modules
-mod utils;
-mod ui;
-mod config;
 mod app;
+mod config;
 mod i18n;
+mod ui;
 mod update;
+mod utils;
 
 // Import Slint UI components
 slint::include_modules!();
 
-use app::{AppState, APP_NAME, APP_ID, COMPANY_NAME, LEGAL_COPYRIGHT};
+use app::{APP_ID, APP_NAME, AppState, COMPANY_NAME, LEGAL_COPYRIGHT};
 use ui::handlers;
 
 #[tokio::main]
@@ -69,7 +69,10 @@ async fn initialize_app_state() -> Arc<Mutex<AppState>> {
     Arc::new(Mutex::new(AppState::new(config_manager, logging_system)))
 }
 
-fn startup_language(config_manager: &config::ConfigManager, settings: &config::UserSettings) -> String {
+fn startup_language(
+    config_manager: &config::ConfigManager,
+    settings: &config::UserSettings,
+) -> String {
     if settings.ui_language == "auto" {
         config_manager.get_config().system.system_language.clone()
     } else {
@@ -81,11 +84,15 @@ fn build_app_window() -> AppWindow {
     let app = AppWindow::new().expect("Failed to create app");
     app.set_is_macos(cfg!(target_os = "macos"));
     app.set_show_window_controls(!cfg!(target_os = "macos"));
-    app.global::<Theme>().set_default_font_family("Source Han Sans SC".into());
+    app.global::<Theme>()
+        .set_default_font_family("Source Han Sans SC".into());
     app::theme::refresh_theme_options(&app);
     register_i18n_callback(&app);
 
-    debug!("App Metadata - Company: {}, Copyright: {}", COMPANY_NAME, LEGAL_COPYRIGHT);
+    debug!(
+        "App Metadata - Company: {}, Copyright: {}",
+        COMPANY_NAME, LEGAL_COPYRIGHT
+    );
 
     app
 }
@@ -122,8 +129,15 @@ async fn load_settings_to_ui(app: &AppWindow, app_state: &Arc<Mutex<AppState>>) 
         let state = app_state.lock().await;
         (
             state.config_manager.get_settings().clone(),
-            state.config_manager.normalized_settings(state.config_manager.get_settings()),
-            state.config_manager.get_config().system.system_language.clone(),
+            state
+                .config_manager
+                .normalized_settings(state.config_manager.get_settings()),
+            state
+                .config_manager
+                .get_config()
+                .system
+                .system_language
+                .clone(),
         )
     };
 
@@ -143,11 +157,7 @@ async fn load_settings_to_ui(app: &AppWindow, app_state: &Arc<Mutex<AppState>>) 
 
     info!(
         "Configuration loaded to UI (Language: {}, SystemLanguage: {}, ThemeId: {}, LogLevel: {}, LogDays: {})",
-        settings.ui_language,
-        system_language,
-        theme_id,
-        settings.log_level,
-        settings.log_days
+        settings.ui_language, system_language, theme_id, settings.log_level, settings.log_days
     );
 }
 
