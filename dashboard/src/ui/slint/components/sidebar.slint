@@ -1,0 +1,108 @@
+import { Theme, AppI18n } from "../theme.slint";
+import { SidebarItem } from "common.slint";
+
+export component Sidebar inherits Rectangle {
+    in property <bool> collapsed: false;
+    in property <bool> auto_collapsed: false;
+    in property <int> selected_tab: 0;
+    
+    // Callbacks to bubble up
+    callback tab_selected(int);
+    callback toggle_collapsed();
+    width: collapsed ? 54px : 200px;
+    background: Theme.sidebar_bg;
+    animate width {
+        duration: 200ms;
+        easing: ease-out-quad;
+    }
+    VerticalLayout {
+        padding-left: 4px;
+        padding-right: 4px;
+        padding-top: 12px;
+        padding-bottom: 16px;
+        spacing: 4px;
+        alignment: space-between;
+        
+        VerticalLayout {
+            spacing: 4px;
+            alignment: start;
+
+            // Space for floating logo
+            Rectangle {
+                height: 4px;
+            }
+
+            // Hamburger menu button
+            Rectangle {
+                height: 36px;
+                border-radius: 4px;
+                background: touch_menu.has-hover ? Theme.hover_bg : transparent;
+                HorizontalLayout {
+                    padding-left: 13px;
+                    alignment: start;
+                    Text {
+                        text: "\u{E700}";
+                        font-size: 16px;
+                        font-family: "Segoe Fluent Icons";
+                        color: touch_menu.has-hover ? Theme.accent : Theme.text_secondary;
+                        vertical-alignment: center;
+                        horizontal-alignment: center;
+                        width: 20px;
+                    }
+                }
+
+                touch_menu := TouchArea {
+                    clicked => {
+                        root.toggle_collapsed();
+                    }
+                }
+            }
+
+            SidebarItem {
+                icon: "\u{E80F}";
+                text: AppI18n.t("sidebar.home", [AppI18n.version]);
+                selected: selected_tab == 0;
+                collapsed: root.collapsed;
+                clicked => {
+                    root.tab_selected(0);
+                }
+            }
+        }
+
+        VerticalLayout {
+            spacing: 4px;
+            alignment: start;
+
+            Rectangle {
+                height: 8px;
+            }
+
+            Rectangle {
+                x: 4px;
+                width: parent.width - 8px;
+                height: 1px;
+                background: Theme.border_color;
+            }
+
+            SidebarItem {
+                icon: "\u{E713}";
+                text: AppI18n.t("sidebar.settings", [AppI18n.version]);
+                selected: selected_tab == 1;
+                collapsed: root.collapsed;
+                clicked => {
+                    root.tab_selected(1);
+                }
+            }
+
+            SidebarItem {
+                icon: "\u{E946}";
+                text: AppI18n.t("sidebar.about", [AppI18n.version]);
+                selected: selected_tab == 2;
+                collapsed: root.collapsed;
+                clicked => {
+                    root.tab_selected(2);
+                }
+            }
+        }
+    }
+}

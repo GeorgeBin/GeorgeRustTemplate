@@ -1,0 +1,68 @@
+import { Theme } from "../theme.slint";
+import "../../../../assets/font/icons.ttf";
+
+export component SidebarItem inherits Rectangle {
+    in property <string> icon;
+    in property <string> text;
+    in property <bool> selected: false;
+    in property <bool> collapsed: false;
+    callback clicked;
+    height: 36px;
+    border-radius: 4px;
+    background: selected ? Theme.selected_bg : (touch.has-hover ? Theme.hover_bg : transparent);
+    
+    // Tooltip
+    if (collapsed && touch.has-hover): Rectangle {
+        x: parent.width + 8px;
+        y: (parent.height - self.height) / 2;
+        width: label.width + 16px;
+        height: 28px;
+        background: #333333;
+        border-radius: 4px;
+        z: 100;
+        label := Text {
+            text: root.text;
+            color: white;
+            font-size: 12px;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+        }
+    }
+    HorizontalLayout {
+        padding-left: 13px;
+        alignment: start;
+        spacing: 12px;
+        Text {
+            text: icon;
+            font-size: 16px;
+            font-family: "Segoe Fluent Icons";
+            color: (selected || touch.has-hover) ? Theme.accent : Theme.text_secondary;
+            vertical-alignment: center;
+            horizontal-alignment: center;
+            width: 20px;
+        }
+
+        if (!collapsed && text != ""): Text {
+            text: text;
+            font-size: 13px;
+            font-weight: selected ? 500 : 400;
+            color: (selected || touch.has-hover) ? Theme.text_primary : Theme.text_secondary;
+            vertical-alignment: center;
+            overflow: elide;
+        }
+    }
+
+    if (selected): Rectangle {
+        x: 0;
+        width: 3px;
+        height: 16px;
+        background: Theme.accent;
+        border-radius: 1.5px;
+        y: (parent.height - self.height) / 2;
+    }
+    touch := TouchArea {
+        clicked => {
+            root.clicked();
+        }
+    }
+}

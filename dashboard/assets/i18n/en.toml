@@ -1,0 +1,70 @@
+[sidebar]
+home = "Home"
+settings = "Settings"
+about = "About"
+
+[settings]
+language = "Software Language"
+theme = "Theme"
+save = "Save"
+dark = "Dark"
+light = "Light"
+system_default = "Follow system"
+log_path = "Log path"
+workspace_directory = "Workspace directory"
+log_level = "Log level"
+log_retention_days = "Log retention days"
+update_interval = "Automatic update check"
+select_folder = "Select Folder"
+placeholder_select = "Click button to select folder"
+saved_success = "Settings saved successfully!"
+saved_failed = "Failed to save settings: {0}"
+select_distro_dir = "Select the default installation directory."
+select_log_dir = "Select log path"
+
+[settings.languages]
+auto = "Follow system"
+en = "English"
+zh_cn = "简体中文"
+
+[settings.log_levels]
+error = "Error level"
+warn = "Warning level"
+info = "Information level"
+debug = "Debug level"
+trace = "Trace level"
+
+[settings.log_retention_options]
+seven_days = "7 days"
+half_month = "Half a month"
+one_month = "1 month"
+
+[settings.update_options]
+daily = "Every day"
+weekly = "Every week"
+biweekly = "Every two weeks"
+monthly = "Every month"
+
+[dialog]
+confirm = "Confirm"
+info = "Information"
+update_msg = "New version found: v{0} (Current version: v{1})"
+expire_title = "Version Expired"
+expire_msg = "The version has expired."
+download_now = "Download now"
+download_later = "Download later"
+update_check_title = "Checking for updates"
+update_check_info = "You can visit the project homepage or release page for more information."
+update_latest = "This is currently the latest version"
+update_timeout = "Network timed out, try again later"
+update_failed = "Update check failed: {0}"
+
+[about]
+title = "About This Shell"
+description = "Desktop Demo Shell is a lightweight native shell for demos and product prototypes. It keeps window chrome, navigation, persisted settings, localization support, and update checks ready for reuse."
+version = "Version"
+check_update = "Checking for updates..."
+new_version = "A new version is available: v{0}"
+homepage = "Project homepage"
+issues = "Issues"
+discussions = "Discussions"

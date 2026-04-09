@@ -1,0 +1,51 @@
+import { MessageDialog, CheckUpdateDialog } from "dialogs.slint";
+import { AppInfo, AppI18n } from "../theme.slint";
+
+export component ModalManager inherits Rectangle {
+    in property <bool> show_message: false;
+    in property <bool> show_update: false;
+    in property <bool> show_expire: false;
+    in property <string> message_text;
+
+    callback close_message();
+    callback download_update();
+    callback close_update();
+    callback close_expire();
+
+    if (show_message): MessageDialog {
+        width: 100%;
+        height: 100%;
+        message: root.message_text;
+        close => {
+            root.close_message();
+        }
+    }
+
+    if (show_update): CheckUpdateDialog {
+        width: 100%;
+        height: 100%;
+        message_content: AppI18n.t("dialog.update_msg", [AppInfo.latest_version, AppInfo.version, AppI18n.version]);
+        is_expire: false;
+        show_cancel: true;
+        download => {
+            root.download_update();
+        }
+        close => {
+            root.close_update();
+        }
+    }
+
+    if (show_expire): CheckUpdateDialog {
+        width: 100%;
+        height: 100%;
+        message_content: AppI18n.t("dialog.expire_msg", [AppI18n.version]);
+        is_expire: true;
+        show_cancel: true;
+        download => {
+            root.download_update();
+        }
+        close => {
+            root.close_expire();
+        }
+    }
+}

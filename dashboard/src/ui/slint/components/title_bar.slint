@@ -1,0 +1,129 @@
+import { Theme } from "../theme.slint";
+
+component WindowButton inherits Rectangle {
+    in property <string> text;
+    in property <bool> danger: false;
+    callback clicked();
+
+    width: 40px;
+    height: 28px;
+    border-radius: 4px;
+    background: touch.pressed ? (root.danger ? #C42B1C : Theme.selected_bg)
+        : (touch.has-hover ? (root.danger ? #C42B1C : Theme.hover_bg) : transparent);
+
+    Text {
+        text: root.text;
+        color: root.danger && (touch.has-hover || touch.pressed) ? #FFFFFF : Theme.text_primary;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+        width: parent.width;
+        height: parent.height;
+        font-size: 12px;
+    }
+
+    touch := TouchArea {
+        clicked => {
+            root.clicked();
+        }
+    }
+}
+
+export component TitleBar inherits Rectangle {
+    in property <string> title;
+    in property <bool> is_macos: false;
+    in property <bool> show_window_controls: false;
+    in property <bool> is_maximized: false;
+    callback drag_requested();
+    callback toggle_maximize_requested();
+    callback minimize_requested();
+    callback close_requested();
+
+    height: 40px;
+    background: transparent;
+
+    // Reserve space for macOS traffic lights so the centered title does not overlap.
+    Rectangle {
+        x: 0;
+        y: 0;
+        width: root.is_macos ? 86px : 12px;
+        height: parent.height;
+        background: transparent;
+    }
+
+    HorizontalLayout {
+        x: root.show_window_controls ? 16px : (parent.width - self.width) / 2;
+        y: 0;
+        height: parent.height;
+        spacing: 8px;
+        alignment: root.show_window_controls ? start : center;
+
+        Rectangle {
+            width: 18px;
+            height: parent.height;
+            background: transparent;
+
+            Image {
+                source: @image-url("../../../../assets/logo/logo.png");
+                width: 18px;
+                height: 18px;
+                y: (parent.height - self.height) / 2;
+                image-fit: contain;
+            }
+        }
+
+        Text {
+            text: root.title;
+            font-size: 13px;
+            font-weight: 600;
+            color: Theme.text_primary;
+            vertical-alignment: center;
+            horizontal-alignment: center;
+            y: (parent.height - self.height) / 2;
+        }
+    }
+
+    drag-area := TouchArea {
+        x: 0;
+        y: 0;
+        width: parent.width - (root.show_window_controls ? 138px : 0px);
+        height: parent.height;
+        mouse-cursor: default;
+        clicked => {
+            root.drag_requested();
+        }
+        double-clicked => {
+            if (root.show_window_controls) {
+                root.toggle_maximize_requested();
+            }
+        }
+    }
+
+    if (root.show_window_controls): HorizontalLayout {
+        x: parent.width - self.width - 8px;
+        y: 4px;
+        height: parent.height - 8px;
+        spacing: 4px;
+
+        WindowButton {
+            text: "_";
+            clicked => {
+                root.minimize_requested();
+            }
+        }
+
+        WindowButton {
+            text: root.is_maximized ? "❐" : "□";
+            clicked => {
+                root.toggle_maximize_requested();
+            }
+        }
+
+        WindowButton {
+            text: "X";
+            danger: true;
+            clicked => {
+                root.close_requested();
+            }
+        }
+    }
+}

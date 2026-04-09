@@ -1,0 +1,173 @@
+import { Theme, AppInfo, AppI18n } from "theme.slint";
+import { TitleBar } from "components/title_bar.slint";
+import { Sidebar } from "components/sidebar.slint";
+import { ModalManager } from "components/modal_manager.slint";
+import { MainView } from "views/main_view.slint";
+import { SettingsView } from "views/settings_view.slint";
+import { AboutView } from "views/about_view.slint";
+
+export { Theme, AppInfo, AppI18n }
+
+export component AppWindow inherits Window {
+    title: "Desktop Demo Shell";
+    preferred-width: 800px;
+    preferred-height: 600px;
+    no-frame: !root.is_macos;
+    background: Theme.background;
+    default-font-family: Theme.default_font_family;
+
+    in property <int> selected_tab: 0;
+    in property <bool> is_macos: false;
+    in property <bool> show_window_controls: false;
+    in-out property <bool> sidebar_collapsed: false;
+    private property <bool> auto_sidebar_collapsed: false;
+    in-out property <string> ui_language: "auto";
+    in-out property <string> theme_id: "system";
+    in-out property <[string]> theme_options: ["Follow system", "Light", "Dark"];
+    in-out property <int> selected_theme_index: 0;
+    in-out property <string> distro_location: "";
+    in-out property <string> logs_location: "";
+    in-out property <int> log_level: 5;
+    in-out property <int> log_days: 7;
+    in-out property <int> check_update_interval: 7;
+    private property <int> settings_resize_token: 0;
+    in-out property <bool> show_message_dialog: false;
+    in-out property <string> current_message: "";
+    in-out property <bool> show_update_dialog: false;
+    in-out property <bool> show_expire_dialog: false;
+    in-out property <bool> window_maximized: false;
+
+    callback select_tab(int);
+    callback open_url(string);
+    callback check_update();
+    callback download_update();
+    callback close_expire_dialog();
+    callback save_settings();
+    callback select_distro_folder();
+    callback select_logs_folder();
+    callback theme_selected(int);
+    callback drag_window();
+    callback toggle_maximize_window();
+    callback minimize_window();
+    callback close_window();
+
+    changed width => {
+        self.settings_resize_token += 1;
+        if (self.width < 720px) {
+            self.auto_sidebar_collapsed = true;
+        } else if (self.width > 760px) {
+            self.auto_sidebar_collapsed = false;
+        }
+    }
+
+    Rectangle {
+        background: Theme.background;
+        border-radius: 8px;
+        clip: true;
+        border-width: 1px;
+        border-color: Theme.main_color;
+
+        VerticalLayout {
+            TitleBar {
+                title: "Desktop Demo Shell";
+                is_macos: root.is_macos;
+                show_window_controls: root.show_window_controls;
+                is_maximized: root.window_maximized;
+                drag_requested => {
+                    root.drag_window();
+                }
+                toggle_maximize_requested => {
+                    root.toggle_maximize_window();
+                }
+                minimize_requested => {
+                    root.minimize_window();
+                }
+                close_requested => {
+                    root.close_window();
+                }
+            }
+
+            HorizontalLayout {
+                Sidebar {
+                    collapsed: root.auto_sidebar_collapsed || root.sidebar_collapsed;
+                    auto_collapsed: root.auto_sidebar_collapsed;
+                    selected_tab: root.selected_tab;
+                    toggle_collapsed => {
+                        if (!root.auto_sidebar_collapsed) {
+                            root.sidebar_collapsed = !root.sidebar_collapsed;
+                        }
+                    }
+                    tab_selected(idx) => {
+                        root.select_tab(idx);
+                    }
+                }
+
+                Rectangle {
+                    background: Theme.content_bg;
+                    border-top-left-radius: 8px;
+                    clip: true;
+
+                    VerticalLayout {
+                        padding: 16px;
+                        padding-right: 6px;
+
+                        if (selected_tab == 0): MainView {}
+
+                        if (selected_tab == 1): SettingsView {
+                            ui_language <=> root.ui_language;
+                            theme_options <=> root.theme_options;
+                            selected_theme_index <=> root.selected_theme_index;
+                            distro_location <=> root.distro_location;
+                            logs_location <=> root.logs_location;
+                            log_level <=> root.log_level;
+                            log_days <=> root.log_days;
+                            check_update_interval <=> root.check_update_interval;
+                            resize_token <=> root.settings_resize_token;
+                            save-settings => {
+                                root.save_settings();
+                            }
+                            theme-selected(idx) => {
+                                root.theme_selected(idx);
+                            }
+                            select-distro-folder => {
+                                root.select_distro_folder();
+                            }
+                            select-logs-folder => {
+                                root.select_logs_folder();
+                            }
+                        }
+
+                        if (selected_tab == 2): AboutView {
+                            open_url(url) => {
+                                root.open_url(url);
+                            }
+                            check_update_clicked => {
+                                root.check_update();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        ModalManager {
+            show_message: root.show_message_dialog;
+            message_text: root.current_message;
+            close_message => {
+                root.show_message_dialog = false;
+            }
+            show_update: root.show_update_dialog;
+            download_update => {
+                root.download_update();
+                root.show_update_dialog = false;
+            }
+            close_update => {
+                root.show_update_dialog = false;
+            }
+            show_expire: root.show_expire_dialog;
+            close_expire => {
+                root.close_expire_dialog();
+            }
+        }
+    }
+}

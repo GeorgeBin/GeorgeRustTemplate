@@ -1,0 +1,402 @@
+import { Theme, AppI18n } from "../theme.slint";
+import { CustomScrollbar } from "../components/scrollbar.slint";
+import {
+    CustomLineEdit,
+    CustomComboBox,
+    CustomButton,
+} from "../components/form_widgets.slint";
+
+export component SettingsView inherits Rectangle {
+    in-out property <string> ui_language: "auto";
+    in-out property <[string]> theme_options: [];
+    in-out property <int> selected_theme_index: 0;
+    in-out property <string> distro_location: "";
+    in-out property <string> logs_location: "";
+    in-out property <int> log_level: 3;
+    in-out property <int> log_days: 7;
+    in-out property <int> check_update_interval: 7;
+    in property <int> resize_token: 0;
+
+    private property <length> section-spacing: 16px;
+    private property <length> field-spacing: 8px;
+    private property <length> row-spacing: 12px;
+    private property <bool> open-dropdown: combo-lang.open-dropdown || combo-theme.open-dropdown || combo-update.open-dropdown || combo-log.open-dropdown || combo-log-retention.open-dropdown;
+
+    private property <[string]> language-options: [
+        AppI18n.t("settings.languages.auto", [AppI18n.version]),
+        AppI18n.t("settings.languages.en", [AppI18n.version]),
+        AppI18n.t("settings.languages.zh_cn", [AppI18n.version])
+    ];
+    private property <[string]> log-level-options: [
+        AppI18n.t("settings.log_levels.error", [AppI18n.version]),
+        AppI18n.t("settings.log_levels.warn", [AppI18n.version]),
+        AppI18n.t("settings.log_levels.info", [AppI18n.version]),
+        AppI18n.t("settings.log_levels.debug", [AppI18n.version]),
+        AppI18n.t("settings.log_levels.trace", [AppI18n.version])
+    ];
+    private property <[string]> log-days-options: [
+        AppI18n.t("settings.log_retention_options.seven_days", [AppI18n.version]),
+        AppI18n.t("settings.log_retention_options.half_month", [AppI18n.version]),
+        AppI18n.t("settings.log_retention_options.one_month", [AppI18n.version])
+    ];
+    private property <[string]> check-update-options: [
+        AppI18n.t("settings.update_options.daily", [AppI18n.version]),
+        AppI18n.t("settings.update_options.weekly", [AppI18n.version]),
+        AppI18n.t("settings.update_options.biweekly", [AppI18n.version]),
+        AppI18n.t("settings.update_options.monthly", [AppI18n.version])
+    ];
+
+    pure function get-check-update-index(days: int) -> int {
+        if (days == 1) {
+            return 0;
+        }
+        if (days == 7) {
+            return 1;
+        }
+        if (days == 15) {
+            return 2;
+        }
+        if (days == 30) {
+            return 3;
+        }
+        return 1;
+    }
+
+    pure function get-log-days-index(days: int) -> int {
+        if (days == 7) {
+            return 0;
+        }
+        if (days == 15) {
+            return 1;
+        }
+        if (days == 30) {
+            return 2;
+        }
+        return 0;
+    }
+
+    pure function get-language-index(lang: string) -> int {
+        if (lang == "en") {
+            return 1;
+        }
+        if (lang == "zh-CN") {
+            return 2;
+        }
+        return 0;
+    }
+
+    pure function language-from-index(idx: int) -> string {
+        if (idx == 1) {
+            return "en";
+        }
+        if (idx == 2) {
+            return "zh-CN";
+        }
+        return "auto";
+    }
+
+    pure function check-update-days-from-index(idx: int) -> int {
+        if (idx == 0) {
+            return 1;
+        }
+        if (idx == 2) {
+            return 15;
+        }
+        if (idx == 3) {
+            return 30;
+        }
+        return 7;
+    }
+
+    pure function log-days-from-index(idx: int) -> int {
+        if (idx == 1) {
+            return 15;
+        }
+        if (idx == 2) {
+            return 30;
+        }
+        return 7;
+    }
+
+    function close-all-dropdowns() {
+        if (!root.open-dropdown) {
+            return;
+        }
+        combo-lang.close-dropdown();
+        combo-theme.close-dropdown();
+        combo-update.close-dropdown();
+        combo-log.close-dropdown();
+        combo-log-retention.close-dropdown();
+    }
+
+    callback save-settings();
+    callback theme-selected(int);
+    callback select-distro-folder();
+    callback select-logs-folder();
+
+    background: transparent;
+
+    changed resize_token => {
+        root.close-all-dropdowns();
+    }
+
+    VerticalLayout {
+        spacing: 0;
+
+        content-wrapper := Rectangle {
+            vertical-stretch: 1;
+            background: transparent;
+            clip: true;
+
+            flickable := Flickable {
+                width: parent.width;
+                height: parent.height;
+                viewport-height: content.preferred-height;
+                interactive: !root.open-dropdown;
+                changed viewport-y => {
+                    root.close-all-dropdowns();
+                }
+
+                content := VerticalLayout {
+                    padding-left: 4px;
+                    padding-right: 16px;
+                    padding-top: 8px;
+                    padding-bottom: 8px;
+                    spacing: root.section-spacing;
+                    alignment: start;
+
+                    Rectangle {
+                        height: general-grid.preferred-height;
+                        background: transparent;
+
+                        general-grid := GridLayout {
+                            spacing: root.row-spacing;
+
+                            Row {
+                                VerticalLayout {
+                                    horizontal-stretch: 1;
+                                    preferred-width: 0;
+                                    min-width: 0;
+                                    spacing: root.field-spacing;
+
+                                    Text {
+                                        text: AppI18n.t("settings.language", [AppI18n.version]);
+                                        font-size: 13px;
+                                        color: Theme.text_secondary;
+                                    }
+
+                                    combo-lang := CustomComboBox {
+                                        model: root.language-options;
+                                        current-index: root.get-language-index(root.ui_language);
+                                        height: 32px;
+                                        selected(idx) => {
+                                            root.ui_language = root.language-from-index(idx);
+                                        }
+                                    }
+                                }
+
+                                VerticalLayout {
+                                    horizontal-stretch: 1;
+                                    preferred-width: 0;
+                                    min-width: 0;
+                                    spacing: root.field-spacing;
+
+                                    Text {
+                                        text: AppI18n.t("settings.theme", [AppI18n.version]);
+                                        font-size: 13px;
+                                        color: Theme.text_secondary;
+                                    }
+
+                                    combo-theme := CustomComboBox {
+                                        model: root.theme_options;
+                                        current-index <=> root.selected_theme_index;
+                                        height: 32px;
+                                        selected(idx) => {
+                                            root.theme-selected(idx);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        height: behavior-grid.preferred-height;
+                        background: transparent;
+
+                        behavior-grid := GridLayout {
+                            spacing: root.row-spacing;
+
+                            Row {
+                                VerticalLayout {
+                                    horizontal-stretch: 1;
+                                    preferred-width: 0;
+                                    min-width: 0;
+                                    spacing: root.field-spacing;
+
+                                    Text {
+                                        text: AppI18n.t("settings.update_interval", [AppI18n.version]);
+                                        font-size: 13px;
+                                        color: Theme.text_secondary;
+                                    }
+
+                                    combo-update := CustomComboBox {
+                                        model: root.check-update-options;
+                                        current-index: root.get-check-update-index(root.check_update_interval);
+                                        height: 32px;
+                                        dropdown-height: 100px;
+                                        selected(idx) => {
+                                            root.check_update_interval = root.check-update-days-from-index(idx);
+                                        }
+                                    }
+                                }
+
+                                Rectangle {
+                                    horizontal-stretch: 1;
+                                    preferred-width: 0;
+                                    min-width: 0;
+                                    background: transparent;
+                                }
+                            }
+
+                            Row {
+                                VerticalLayout {
+                                    horizontal-stretch: 1;
+                                    preferred-width: 0;
+                                    min-width: 0;
+                                    spacing: root.field-spacing;
+
+                                    Text {
+                                        text: AppI18n.t("settings.log_level", [AppI18n.version]);
+                                        font-size: 13px;
+                                        color: Theme.text_secondary;
+                                    }
+
+                                    combo-log := CustomComboBox {
+                                        model: root.log-level-options;
+                                        current-index: root.log_level - 1;
+                                        height: 32px;
+                                        dropdown-height: 100px;
+                                        selected(idx) => {
+                                            root.log_level = idx + 1;
+                                        }
+                                    }
+                                }
+
+                                VerticalLayout {
+                                    horizontal-stretch: 1;
+                                    preferred-width: 0;
+                                    min-width: 0;
+                                    spacing: root.field-spacing;
+
+                                    Text {
+                                        text: AppI18n.t("settings.log_retention_days", [AppI18n.version]);
+                                        font-size: 13px;
+                                        color: Theme.text_secondary;
+                                    }
+
+                                    combo-log-retention := CustomComboBox {
+                                        model: root.log-days-options;
+                                        current-index: root.get-log-days-index(root.log_days);
+                                        height: 32px;
+                                        dropdown-height: 100px;
+                                        selected(idx) => {
+                                            root.log_days = root.log-days-from-index(idx);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    VerticalLayout {
+                        spacing: root.field-spacing;
+
+                        Text {
+                            text: AppI18n.t("settings.log_path", [AppI18n.version]);
+                            font-size: 13px;
+                            color: Theme.text_secondary;
+                        }
+
+                        HorizontalLayout {
+                            spacing: root.field-spacing;
+
+                            CustomLineEdit {
+                                text: root.logs_location;
+                                placeholder-text: AppI18n.t("settings.placeholder_select", [AppI18n.version]);
+                                enabled: false;
+                                horizontal-stretch: 1;
+                            }
+
+                            CustomButton {
+                                text: AppI18n.t("settings.select_folder", [AppI18n.version]);
+                                height: 32px;
+                                clicked => {
+                                    root.select-logs-folder();
+                                }
+                            }
+                        }
+                    }
+
+                    VerticalLayout {
+                        spacing: root.field-spacing;
+
+                        Text {
+                            text: AppI18n.t("settings.workspace_directory", [AppI18n.version]);
+                            font-size: 13px;
+                            color: Theme.text_secondary;
+                        }
+
+                        HorizontalLayout {
+                            spacing: root.field-spacing;
+
+                            CustomLineEdit {
+                                text: root.distro_location;
+                                placeholder-text: AppI18n.t("settings.placeholder_select", [AppI18n.version]);
+                                enabled: false;
+                                horizontal-stretch: 1;
+                            }
+
+                            CustomButton {
+                                text: AppI18n.t("settings.select_folder", [AppI18n.version]);
+                                height: 32px;
+                                clicked => {
+                                    root.select-distro-folder();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (flickable.viewport-height > flickable.height): CustomScrollbar {
+                x: parent.width - 12px;
+                y: 0;
+                width: 8px;
+                height: 100%;
+                maximum: flickable.viewport-height - flickable.height;
+                page_size: flickable.height;
+                value: -flickable.viewport-y;
+                scroll_to(v) => {
+                    flickable.viewport-y = -v;
+                }
+            }
+        }
+
+        HorizontalLayout {
+            padding-top: 8px;
+            padding-bottom: 4px;
+            padding-right: 16px;
+            alignment: end;
+
+            CustomButton {
+                text: AppI18n.t("settings.save", [AppI18n.version]);
+                primary: true;
+                height: 32px;
+                clicked => {
+                    root.save_settings();
+                }
+            }
+        }
+    }
+}

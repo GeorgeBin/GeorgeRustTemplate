@@ -1,0 +1,258 @@
+import { Theme } from "../theme.slint";
+import { CustomScrollbar } from "./scrollbar.slint";
+
+export component CustomLineEdit inherits Rectangle {
+    in-out property <string> text;
+    in property <string> placeholder-text;
+    in property <bool> enabled: true;
+    callback edited(string);
+    height: 32px;
+    background: Theme.input_bg;
+    border-width: 1px;
+    border-color: input-focus.has-focus ? Theme.accent : Theme.input_border;
+    border-radius: 4px;
+    HorizontalLayout {
+        padding-left: 8px;
+        padding-right: 8px;
+        input-focus := TextInput {
+            text <=> root.text;
+            color: Theme.text_primary;
+            vertical-alignment: center;
+            single-line: true;
+            enabled: root.enabled;
+            accepted => {
+                root.edited(self.text);
+            }
+            edited => {
+                root.edited(self.text);
+            }
+        }
+    }
+
+    if (root.text == "" && root.placeholder-text != ""): Text {
+        text: root.placeholder-text;
+        color: Theme.text_secondary;
+        vertical-alignment: center;
+        x: 8px;
+    }
+}
+
+export component CustomComboBox inherits Rectangle {
+    in property <[string]> model;
+    in-out property <int> current-index;
+    in-out property <bool> open-dropdown: false;
+    in property <length> dropdown-height: 160px;
+    callback selected(int);
+    height: 32px;
+
+    public function close-dropdown() {
+        if (!root.open-dropdown) {
+            return;
+        }
+        popup.close();
+        root.open-dropdown = false;
+    }
+    
+    // Main Box
+    Rectangle {
+        background: Theme.input_bg;
+        border-width: 1px;
+        border-color: Theme.input_border;
+        border-radius: 4px;
+        width: 100%;
+        height: 100%;
+        HorizontalLayout {
+            padding-left: 8px;
+            padding-right: 8px;
+            alignment: space-between;
+            Text {
+                text: root.model[root.current-index];
+                color: Theme.text_primary;
+                vertical-alignment: center;
+                horizontal-stretch: 1;
+                overflow: elide;
+                min-width: 0;
+            }
+
+            Text {
+                text: "▼";
+                color: Theme.text_secondary;
+                vertical-alignment: center;
+                font-size: 10px;
+            }
+        }
+
+        TouchArea {
+            clicked => {
+                if (root.open-dropdown) {
+                    root.close-dropdown();
+                } else {
+                    popup.show();
+                    root.open-dropdown = true;
+                }
+            }
+        }
+    }
+
+    popup := PopupWindow {
+        x: 0;
+        y: root.height + 4px;
+        width: root.width;
+        height: Math.min(root.model.length * 32px + 2px, root.dropdown-height);
+        close-policy: PopupClosePolicy.close-on-click;
+        forward-focus: popup-focus;
+
+        popup-focus := FocusScope {
+            focus-changed-event => {
+                root.open-dropdown = self.has-focus;
+            }
+
+            key-pressed(event) => {
+                if (event.text == Key.Escape) {
+                    root.close-dropdown();
+                    return accept;
+                }
+                return reject;
+            }
+
+            Rectangle {
+                width: parent.width;
+                height: parent.height;
+                background: Theme.input_bg;
+                border-width: 1px;
+                border-color: Theme.input_border;
+                border-radius: 4px;
+                drop-shadow-blur: 8px;
+                drop-shadow-color: Theme.dark_mode ? #00000066 : #00000033;
+                flick := Flickable {
+                    x: 1px;
+                    y: 1px;
+                    width: parent.width - 2px;
+                    height: parent.height - 2px;
+                    viewport-height: root.model.length * 32px;
+                    interactive: true;
+                    VerticalLayout {
+                        padding: 0;
+                        spacing: 0;
+                        alignment: start;
+                        for item[i] in root.model: Rectangle {
+                            height: 32px;
+                            background: area.pressed ? Theme.selected_bg : area.has-hover ? Theme.hover_bg : transparent;
+                            border-radius: 2px;
+                            area := TouchArea {
+                                clicked => {
+                                    root.current-index = i;
+                                    root.selected(i);
+                                    root.close-dropdown();
+                                }
+                            }
+
+                            Text {
+                                text: item;
+                                color: Theme.text_primary;
+                                vertical-alignment: center;
+                                x: 8px;
+                            }
+                        }
+                    }
+                }
+
+                // Scrollbar - connected to flick
+                if (flick.viewport-height > self.height - 2px): CustomScrollbar {
+                    x: parent.width - 10px;
+                    y: 1px;
+                    width: 8px;
+                    height: parent.height - 2px;
+                    maximum: flick.viewport-height - flick.height;
+                    page_size: flick.height;
+                    value: -flick.viewport-y;
+                    scroll_to(v) => {
+                        flick.viewport-y = -v;
+                    }
+                }
+            }
+        }
+    }
+}
+
+export component CustomCheckBox inherits Rectangle {
+    in-out property <bool> checked;
+    in property <string> text;
+    in property <bool> enabled: true;
+    callback toggled;
+    // height: 20px; // Removed fixed height to allow wrapping
+    background: transparent;
+    HorizontalLayout {
+        spacing: 12px;
+
+        // Check Box Container
+        Rectangle {
+            width: 18px;
+            height: 18px;
+            y: (parent.height - self.height) / 2;
+            border-width: 1px;
+            border-color: root.checked ? Theme.accent : Theme.input_border;
+            background: root.checked ? Theme.accent : Theme.input_bg;
+            border-radius: 3px;
+
+            // Checkmark
+            if (root.checked): Text {
+                text: "✔";
+                color: #FFFFFF;
+                font-size: 13px;
+                font-weight: 400;
+                width: 100%;
+                height: 100%;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+
+        // Label
+        Text {
+            text: root.text;
+            font-size: 13px;
+            color: Theme.text_primary;
+            vertical-alignment: center;
+            wrap: word-wrap;
+            horizontal-stretch: 1;
+        }
+    }
+
+    TouchArea {
+        enabled: root.enabled;
+        clicked => {
+            root.checked = !root.checked;
+            root.toggled();
+        }
+    }
+}
+
+export component CustomButton inherits Rectangle {
+    in property <string> text;
+    in property <bool> primary: false;
+    in property <bool> enabled: true;
+    callback clicked;
+    border-radius: 4px;
+    background: root.primary ? Theme.accent : (touch.pressed ? Theme.selected_bg : (touch.has-hover ? Theme.hover_bg : Theme.input_bg));
+    border-width: root.primary ? 0 : 1px;
+    border-color: Theme.input_border;
+    opacity: root.enabled ? 1.0 : 0.6;
+    HorizontalLayout {
+        padding-left: 12px;
+        padding-right: 12px;
+        Text {
+            text: root.text;
+            color: root.primary ? #FFFFFF : Theme.text_primary;
+            vertical-alignment: center;
+            horizontal-alignment: center;
+        }
+    }
+
+    touch := TouchArea {
+        enabled: root.enabled;
+        clicked => {
+            root.clicked();
+        }
+    }
+}

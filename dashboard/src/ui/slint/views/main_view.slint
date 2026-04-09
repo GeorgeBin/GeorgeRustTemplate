@@ -1,0 +1,84 @@
+import { Theme } from "../theme.slint";
+
+component HeroCard inherits Rectangle {
+    in property <string> title;
+    in property <string> body;
+    background: Theme.card_bg;
+    border-radius: 10px;
+    border-width: 1px;
+    border-color: Theme.border_color;
+    min-height: 120px;
+
+    VerticalLayout {
+        padding: 18px;
+        spacing: 8px;
+        Text {
+            text: root.title;
+            color: Theme.text_primary;
+            font-size: 16px;
+            font-weight: 700;
+        }
+        Text {
+            text: root.body;
+            color: Theme.text_secondary;
+            font-size: 13px;
+            wrap: word-wrap;
+        }
+    }
+}
+
+export component MainView inherits VerticalLayout {
+    spacing: 14px;
+    padding-left: 4px;
+    padding-right: 16px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+
+    Rectangle {
+        background: Theme.card_bg;
+        border-radius: 12px;
+        border-width: 1px;
+        border-color: Theme.border_color;
+        min-height: 180px;
+
+        VerticalLayout {
+            padding: 24px;
+            spacing: 12px;
+
+            Text {
+                text: "Desktop Demo Shell";
+                color: Theme.text_primary;
+                font-size: 28px;
+                font-weight: 800;
+            }
+
+            Text {
+                text: "A lightweight native desktop shell for demos and product prototypes, with navigation, settings, theming, localization, and update checks already wired in.";
+                color: Theme.text_secondary;
+                font-size: 14px;
+                wrap: word-wrap;
+            }
+        }
+    }
+
+    HorizontalLayout {
+        spacing: 14px;
+
+        HeroCard {
+            horizontal-stretch: 1;
+            title: "Ready for content";
+            body: "Use this area for your next demo surface, overview cards, KPIs, or launch actions.";
+        }
+
+        HeroCard {
+            horizontal-stretch: 1;
+            title: "Keeps the shell pieces";
+            body: "Window chrome, sidebar navigation, theme switching, persisted settings, and the About/update flow remain available.";
+        }
+    }
+
+    HeroCard {
+        title: "Suggested next step";
+        body: "Replace this homepage with your product entry content, then adjust the settings and About links to match the new application framing.";
+    }
+}
