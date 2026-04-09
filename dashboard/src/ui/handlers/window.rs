@@ -1,5 +1,5 @@
-use slint::ComponentHandle;
 use crate::AppWindow;
+use slint::ComponentHandle;
 #[cfg(not(target_os = "macos"))]
 use slint::winit_030::WinitWindowAccessor;
 

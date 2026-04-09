@@ -61,7 +61,11 @@ pub fn spawn_startup_tasks(app_handle: slint::Weak<AppWindow>, app_state: Arc<Mu
 
             match checker::check_update(&current_v, &timezone).await {
                 Ok(result) => {
-                    ui::apply_update_result(&app_handle, result.has_update, result.latest_version.clone());
+                    ui::apply_update_result(
+                        &app_handle,
+                        result.has_update,
+                        result.latest_version.clone(),
+                    );
                     if result.has_update {
                         ui::show_update_available(&app_handle);
                     }

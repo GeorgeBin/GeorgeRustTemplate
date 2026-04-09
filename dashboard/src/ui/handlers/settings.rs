@@ -1,8 +1,8 @@
+use crate::{AppI18n, AppState, AppWindow, app::theme, config, i18n};
+use slint::ComponentHandle;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 use tracing::error;
-use slint::ComponentHandle;
-use crate::{AppWindow, AppState, AppI18n, app::theme, config, i18n};
 
 pub fn setup(app: &AppWindow, app_handle: slint::Weak<AppWindow>, app_state: Arc<Mutex<AppState>>) {
     let ah = app_handle.clone();
@@ -39,10 +39,9 @@ pub fn setup(app: &AppWindow, app_handle: slint::Weak<AppWindow>, app_state: Arc
         if let Some(path) = rfd::FileDialog::new()
             .set_title(i18n::t("settings.select_distro_dir"))
             .pick_folder()
+            && let Some(app) = ah.upgrade()
         {
-            if let Some(app) = ah.upgrade() {
-                app.set_distro_location(path.display().to_string().into());
-            }
+            app.set_distro_location(path.display().to_string().into());
         }
     });
 
@@ -51,10 +50,9 @@ pub fn setup(app: &AppWindow, app_handle: slint::Weak<AppWindow>, app_state: Arc
         if let Some(path) = rfd::FileDialog::new()
             .set_title(i18n::t("settings.select_log_dir"))
             .pick_folder()
+            && let Some(app) = ah.upgrade()
         {
-            if let Some(app) = ah.upgrade() {
-                app.set_logs_location(path.display().to_string().into());
-            }
+            app.set_logs_location(path.display().to_string().into());
         }
     });
 
@@ -67,7 +65,10 @@ pub fn setup(app: &AppWindow, app_handle: slint::Weak<AppWindow>, app_state: Arc
     });
 }
 
-fn collect_user_settings(app: &AppWindow, current_settings: &config::UserSettings) -> config::UserSettings {
+fn collect_user_settings(
+    app: &AppWindow,
+    current_settings: &config::UserSettings,
+) -> config::UserSettings {
     config::UserSettings {
         modify_time: chrono::Utc::now().timestamp_millis().to_string(),
         check_time: current_settings.check_time.clone(),
@@ -91,7 +92,12 @@ fn apply_runtime_settings(app: &AppWindow, state: &mut AppState, settings: &conf
         logging_system.update_level(settings.log_level);
     }
 
-    let system_language = state.config_manager.get_config().system.system_language.clone();
+    let system_language = state
+        .config_manager
+        .get_config()
+        .system
+        .system_language
+        .clone();
     let language_to_load = if settings.ui_language == "auto" {
         system_language
     } else {
@@ -99,7 +105,8 @@ fn apply_runtime_settings(app: &AppWindow, state: &mut AppState, settings: &conf
     };
 
     i18n::load_resources(&language_to_load);
-    app.global::<AppI18n>().set_version(app.global::<AppI18n>().get_version() + 1);
+    app.global::<AppI18n>()
+        .set_version(app.global::<AppI18n>().get_version() + 1);
     theme::refresh_theme_options(app);
 }
 

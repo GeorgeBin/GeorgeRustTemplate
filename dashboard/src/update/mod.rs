@@ -1,6 +1,6 @@
-pub mod constants;
 #[cfg(feature = "update-check")]
 mod checker;
+pub mod constants;
 #[cfg(feature = "expiry-check")]
 mod expiry;
 mod startup;

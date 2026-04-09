@@ -18,7 +18,10 @@ pub struct UpdateResult {
     pub download_url: String,
 }
 
-pub async fn check_update(current_version_str: &str, timezone: &str) -> Result<UpdateResult, String> {
+pub async fn check_update(
+    current_version_str: &str,
+    timezone: &str,
+) -> Result<UpdateResult, String> {
     let ts = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .map(|d| d.as_secs())
@@ -52,7 +55,10 @@ pub async fn check_update(current_version_str: &str, timezone: &str) -> Result<U
                 Err(e) => {
                     let e_str = e.to_string();
                     let e_lower = e_str.to_lowercase();
-                    if e_lower.contains("timed out") || e_lower.contains("timeout") || e_lower.contains("10060") {
+                    if e_lower.contains("timed out")
+                        || e_lower.contains("timeout")
+                        || e_lower.contains("10060")
+                    {
                         last_err = Some("RequestTimeOut".to_string());
                     } else {
                         last_err = Some(format!("Request error: {}", e));
@@ -61,13 +67,18 @@ pub async fn check_update(current_version_str: &str, timezone: &str) -> Result<U
             }
         }
 
-        let config = response_body.ok_or_else(|| last_err.unwrap_or_else(|| "Unknown error".to_string()))?;
+        let config =
+            response_body.ok_or_else(|| last_err.unwrap_or_else(|| "Unknown error".to_string()))?;
 
         let current_v_clean = current_version_str.trim_start_matches('v');
         let latest_v_clean = config.latest.trim_start_matches('v');
 
-        let current = Version::parse(current_v_clean)
-            .map_err(|e| format!("Failed to parse current version {}: {}", current_version_str, e))?;
+        let current = Version::parse(current_v_clean).map_err(|e| {
+            format!(
+                "Failed to parse current version {}: {}",
+                current_version_str, e
+            )
+        })?;
         let latest = Version::parse(latest_v_clean)
             .map_err(|e| format!("Failed to parse latest version {}: {}", config.latest, e))?;
 

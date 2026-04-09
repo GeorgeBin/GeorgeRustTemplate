@@ -1,15 +1,15 @@
+use std::io::{Result, Write};
+use std::path::Path;
+use std::sync::atomic::{AtomicU8, Ordering};
+use std::sync::{Arc, Mutex};
+use tracing::{Level, Metadata, Subscriber};
+use tracing_appender::non_blocking::{NonBlocking, WorkerGuard};
 use tracing_appender::rolling::RollingFileAppender;
 use tracing_subscriber::{
     fmt,
+    layer::{Filter, Layer},
     prelude::*,
-    layer::{Layer, Filter},
 };
-use tracing_appender::non_blocking::{NonBlocking, WorkerGuard};
-use std::sync::{Arc, Mutex};
-use std::sync::atomic::{AtomicU8, Ordering};
-use std::io::{Write, Result};
-use tracing::{Metadata, Level, Subscriber};
-use std::path::Path;
 
 pub struct SwapWriter {
     inner: Arc<Mutex<NonBlocking>>,
@@ -27,7 +27,9 @@ impl Write for SwapWriter {
 impl<'a> fmt::MakeWriter<'a> for SwapWriter {
     type Writer = Self;
     fn make_writer(&'a self) -> Self::Writer {
-        Self { inner: self.inner.clone() }
+        Self {
+            inner: self.inner.clone(),
+        }
     }
 }
 
@@ -43,7 +45,11 @@ impl DynamicLevelFilter {
 }
 
 impl<S: Subscriber> Filter<S> for DynamicLevelFilter {
-    fn enabled(&self, metadata: &Metadata<'_>, _ctx: &tracing_subscriber::layer::Context<'_, S>) -> bool {
+    fn enabled(
+        &self,
+        metadata: &Metadata<'_>,
+        _ctx: &tracing_subscriber::layer::Context<'_, S>,
+    ) -> bool {
         metadata.level() <= &self.get_level()
     }
 }
@@ -56,19 +62,19 @@ pub struct LoggingSystem {
 
 pub fn init_logging(log_dir: &str, level_num: u8) -> LoggingSystem {
     let level_atomic = Arc::new(AtomicU8::new(level_num));
-    
+
     // Terminal output
     let stdout_layer = fmt::layer()
         .with_target(false)
-        .with_filter(DynamicLevelFilter { current_level: level_atomic.clone() });
-    
+        .with_filter(DynamicLevelFilter {
+            current_level: level_atomic.clone(),
+        });
+
     // File output (fall back to temp on permission errors)
     let (non_blocking, guard) = match build_file_appender(log_dir) {
         Ok(appender) => tracing_appender::non_blocking(appender),
         Err(primary_err) => {
-            let fallback_dir = std::env::temp_dir()
-                .join("dashboard")
-                .join("logs");
+            let fallback_dir = std::env::temp_dir().join("dashboard").join("logs");
             match build_file_appender(fallback_dir.to_string_lossy().as_ref()) {
                 Ok(appender) => tracing_appender::non_blocking(appender),
                 Err(fallback_err) => {
@@ -81,23 +87,27 @@ pub fn init_logging(log_dir: &str, level_num: u8) -> LoggingSystem {
             }
         }
     };
-    
-    let swap_writer = SwapWriter { inner: Arc::new(Mutex::new(non_blocking)) };
+
+    let swap_writer = SwapWriter {
+        inner: Arc::new(Mutex::new(non_blocking)),
+    };
     let guard_holder = Arc::new(Mutex::new(guard));
 
     let file_layer = fmt::layer()
         .with_writer(swap_writer.clone())
         .with_ansi(false)
         .with_target(true)
-        .with_filter(DynamicLevelFilter { current_level: level_atomic.clone() });
+        .with_filter(DynamicLevelFilter {
+            current_level: level_atomic.clone(),
+        });
 
     tracing_subscriber::registry()
         .with(stdout_layer)
         .with(file_layer)
         .init();
 
-    LoggingSystem { 
-        writer: swap_writer, 
+    LoggingSystem {
+        writer: swap_writer,
         guard: guard_holder,
         level: level_atomic,
     }
@@ -124,7 +134,7 @@ impl LoggingSystem {
             }
         };
         let (non_blocking, guard) = tracing_appender::non_blocking(file_appender);
-        
+
         *self.writer.inner.lock().unwrap() = non_blocking;
         *self.guard.lock().unwrap() = guard;
         tracing::info!("Log directory updated to: {}", log_dir);
@@ -139,7 +149,9 @@ impl LoggingSystem {
 
 impl Clone for SwapWriter {
     fn clone(&self) -> Self {
-        Self { inner: self.inner.clone() }
+        Self {
+            inner: self.inner.clone(),
+        }
     }
 }
 
@@ -150,7 +162,7 @@ fn build_file_appender(log_dir: &str) -> std::io::Result<RollingFileAppender> {
         .filename_prefix("dashboard")
         .filename_suffix("log")
         .build(log_dir)
-        .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))
+        .map_err(std::io::Error::other)
 }
 
 pub fn cleanup_expired_logs(log_dir: &str, log_days: u8) {
@@ -181,11 +193,11 @@ pub fn cleanup_expired_logs(log_dir: &str, log_days: u8) {
                 .trim_start_matches("dashboard.")
                 .trim_end_matches(".log");
 
-            if let Ok(file_date) = chrono::NaiveDate::parse_from_str(date_part, "%Y-%m-%d") {
-                if file_date <= expiration_date {
-                    tracing::info!("Deleting expired log file: {:?}", file_name);
-                    let _ = std::fs::remove_file(path);
-                }
+            if let Ok(file_date) = chrono::NaiveDate::parse_from_str(date_part, "%Y-%m-%d")
+                && file_date <= expiration_date
+            {
+                tracing::info!("Deleting expired log file: {:?}", file_name);
+                let _ = std::fs::remove_file(path);
             }
         }
     }

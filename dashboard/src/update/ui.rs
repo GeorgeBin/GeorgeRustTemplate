@@ -7,7 +7,7 @@ use tracing::{info, warn};
 
 #[cfg(feature = "update-check")]
 use crate::i18n;
-use crate::{update::constants, AppInfo, AppState, AppWindow};
+use crate::{AppInfo, AppState, AppWindow, update::constants};
 
 #[cfg(feature = "update-check")]
 use super::checker;
@@ -18,7 +18,12 @@ pub async fn configure_app_info(app: &AppWindow, app_state: &Arc<Mutex<AppState>
     app.global::<AppInfo>()
         .set_homepage(constants::PROJECT_HOMEPAGE.into());
     app.global::<AppInfo>().set_issues_url(
-        format!("{}{}", constants::PROJECT_HOMEPAGE, constants::PROJECT_ISSUES_PATH).into(),
+        format!(
+            "{}{}",
+            constants::PROJECT_HOMEPAGE,
+            constants::PROJECT_ISSUES_PATH
+        )
+        .into(),
     );
 
     let timezone = {

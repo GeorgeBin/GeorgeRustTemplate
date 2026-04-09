@@ -52,12 +52,13 @@ fn main() -> Result<(), slint::PlatformError> {
     let window_weak = window.as_weak();
     ui::ntp::get_time(window_weak);
 
-
     // corelib 内方法的调用
     {
         corelib::add(1, 2);
         let valid = corelib::utils::is_valid_ipv4("192.168.1.1".to_string());
+        let callback_result = callback::calculate("192.168.1.1".to_string());
         println!("is valid ipv4={valid}");
+        println!("callback result={callback_result}");
     }
 
     // 引用方式

@@ -1,8 +1,12 @@
+use crate::{AppState, AppWindow};
 use std::sync::Arc;
 use tokio::sync::Mutex;
-use crate::{AppWindow, AppState};
 
-pub fn setup(app: &AppWindow, app_handle: slint::Weak<AppWindow>, _app_state: Arc<Mutex<AppState>>) {
+pub fn setup(
+    app: &AppWindow,
+    app_handle: slint::Weak<AppWindow>,
+    _app_state: Arc<Mutex<AppState>>,
+) {
     let ah = app_handle.clone();
     app.on_select_tab(move |tab| {
         if let Some(app) = ah.upgrade() {

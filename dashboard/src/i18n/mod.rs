@@ -1,7 +1,7 @@
-use std::collections::HashMap;
-use std::sync::Mutex;
 use once_cell::sync::Lazy;
 use rust_embed::RustEmbed;
+use std::collections::HashMap;
+use std::sync::Mutex;
 use toml::Value;
 use tracing::{debug, error};
 
@@ -11,21 +11,20 @@ struct Asset;
 
 // Global storage for translations: "key" -> "translation"
 // We flatten nested TOML: "section.key"
-static TRANSLATIONS: Lazy<Mutex<HashMap<String, String>>> = Lazy::new(|| {
-    Mutex::new(HashMap::new())
-});
+static TRANSLATIONS: Lazy<Mutex<HashMap<String, String>>> =
+    Lazy::new(|| Mutex::new(HashMap::new()));
 
 pub fn normalize_language_code(lang: &str) -> String {
     let lower = lang.to_lowercase();
     let lower = lower.replace("_", "-");
-    
+
     if lower == "en" || lower.starts_with("en-") {
         return "en".to_string();
     }
     if lower == "zh" || lower == "zh-cn" || lower == "zh-sg" || lower.starts_with("zh-hans") {
         return "zh-CN".to_string();
     }
-    
+
     "en".to_string()
 }
 
@@ -33,15 +32,15 @@ pub fn load_resources(lang_code: &str) {
     let normalized = normalize_language_code(lang_code);
     let mut map = TRANSLATIONS.lock().unwrap();
     map.clear();
-    
+
     // 1. Load English (Base)
     load_file_to_map("en", &mut map);
-    
+
     // 2. Load Target (if not en)
     if normalized != "en" {
         load_file_to_map(&normalized, &mut map);
     }
-    
+
     println!("i18n: Map populated with {} keys", map.len());
 }
 
@@ -97,7 +96,9 @@ fn strip_bom(mut content: String) -> String {
 
 #[cfg(debug_assertions)]
 pub fn verify_translations() {
-    if !cfg!(debug_assertions) { return; }
+    if !cfg!(debug_assertions) {
+        return;
+    }
 
     println!("--- i18n Integrity Check ---");
     let mut en_map = HashMap::new();
@@ -118,12 +119,16 @@ pub fn verify_translations() {
         }
 
         if !missing.is_empty() {
-             println!("[!] Language '{}' is missing {} keys:", lang, missing.len());
-             for key in missing {
-                 println!("    - {}", key);
-             }
+            println!("[!] Language '{}' is missing {} keys:", lang, missing.len());
+            for key in missing {
+                println!("    - {}", key);
+            }
         } else {
-             println!("[+] Language '{}' is fully translated ({} keys).", lang, lang_map.len());
+            println!(
+                "[+] Language '{}' is fully translated ({} keys).",
+                lang,
+                lang_map.len()
+            );
         }
     }
     println!("----------------------------");
@@ -150,9 +155,7 @@ fn flatten_toml(prefix: &str, value: &Value, map: &mut HashMap<String, String>) 
 
 pub fn t(key: &str) -> String {
     let map = TRANSLATIONS.lock().unwrap();
-    map.get(key).cloned().unwrap_or_else(|| {
-        key.to_string()
-    })
+    map.get(key).cloned().unwrap_or_else(|| key.to_string())
 }
 
 pub fn tr(key: &str, args: &[String]) -> String {
@@ -161,4 +164,30 @@ pub fn tr(key: &str, args: &[String]) -> String {
         text = text.replace(&format!("{{{}}}", i), arg);
     }
     text
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn chinese_translation_covers_english_keys() {
+        let mut en_map = HashMap::new();
+        let mut zh_map = HashMap::new();
+
+        load_file_to_map("en", &mut en_map);
+        load_file_to_map("zh-CN", &mut zh_map);
+
+        let missing: Vec<_> = en_map
+            .keys()
+            .filter(|key| !zh_map.contains_key(*key))
+            .cloned()
+            .collect();
+
+        assert!(
+            missing.is_empty(),
+            "zh-CN is missing translation keys: {:?}",
+            missing
+        );
+    }
 }

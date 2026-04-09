@@ -1,6 +1,7 @@
 use std::fs;
+use std::path::Path;
 use std::path::PathBuf;
-use tracing::{info, error, warn};
+use tracing::{error, info, warn};
 
 mod migration;
 pub mod models;
@@ -32,7 +33,10 @@ impl ConfigManager {
             Self::initialize_config(&config_path).await
         };
 
-        Self { config_path, config }
+        Self {
+            config_path,
+            config,
+        }
     }
 
     // Create default configuration and populate system information
@@ -69,7 +73,10 @@ impl ConfigManager {
                 config
             }
             Err(e) => {
-                error!("Failed to load configuration file: {}, using default configuration", e);
+                error!(
+                    "Failed to load configuration file: {}, using default configuration",
+                    e
+                );
                 Self::initialize_config(config_path).await
             }
         }
@@ -86,7 +93,10 @@ impl ConfigManager {
         if let Err(e) = Self::save_config(config_path, &mut config) {
             error!("Failed to save initial configuration: {}", e);
         } else {
-            info!("✅ Configuration file initialized successfully: {}", config_path.display());
+            info!(
+                "✅ Configuration file initialized successfully: {}",
+                config_path.display()
+            );
         }
 
         config
@@ -97,7 +107,7 @@ impl ConfigManager {
         // Update startup time field
         config.application.startup_time = chrono::Utc::now().timestamp_millis().to_string();
         config.application.app_version = env!("CARGO_PKG_VERSION").to_string();
-        
+
         if !refresh_system {
             info!("Skipping system environment query (less than 7 days since last update)");
             return;
@@ -163,11 +173,11 @@ impl ConfigManager {
         migration::migrate_config(config);
     }
 
-    fn ensure_config_directory(path: &PathBuf) {
-        if let Some(parent) = path.parent() {
-            if let Err(e) = fs::create_dir_all(parent) {
-                error!("Failed to create configuration directory: {}", e);
-            }
+    fn ensure_config_directory(path: &Path) {
+        if let Some(parent) = path.parent()
+            && let Err(e) = fs::create_dir_all(parent)
+        {
+            error!("Failed to create configuration directory: {}", e);
         }
     }
 
@@ -208,13 +218,16 @@ impl ConfigManager {
     }
 
     // Update user settings and save
-    pub fn update_settings(&mut self, settings: UserSettings) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn update_settings(
+        &mut self,
+        settings: UserSettings,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         let settings = Self::normalize_settings(settings);
         Self::ensure_settings_directories(&settings);
 
         self.config.settings = settings;
         self.config.application.setting_version = SETTINGS_VERSION as u8;
-        
+
         Self::save_config(&self.config_path, &mut self.config)?;
         info!("✅ Configuration saved successfully");
         Ok(())
@@ -232,5 +245,26 @@ impl ConfigManager {
         Self::save_config(&self.config_path, &mut self.config)?;
         info!("Updated check-time to: {}", self.config.settings.check_time);
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn normalizes_invalid_settings_to_supported_values() {
+        let mut settings = Config::default().settings;
+        settings.log_days = 99;
+        settings.check_update = 99;
+        settings.theme_id = "invalid".to_string();
+        settings.ui_language = "en_US".to_string();
+
+        let normalized = ConfigManager::normalize_settings(settings);
+
+        assert_eq!(normalized.log_days, 7);
+        assert_eq!(normalized.check_update, 7);
+        assert_eq!(normalized.theme_id, crate::app::theme::default_theme_id());
+        assert_eq!(normalized.ui_language, "en");
     }
 }

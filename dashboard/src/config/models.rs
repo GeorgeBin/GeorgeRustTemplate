@@ -51,10 +51,18 @@ pub struct UserSettings {
     pub log_days: u8,
 }
 
-pub fn default_log_level() -> u8 { 3 }
-pub fn default_log_days() -> u8 { 7 }
-pub fn default_check_update() -> u8 { 7 }
-pub fn default_theme_id() -> String { crate::app::theme::default_theme_id().to_string() }
+pub fn default_log_level() -> u8 {
+    3
+}
+pub fn default_log_days() -> u8 {
+    7
+}
+pub fn default_check_update() -> u8 {
+    7
+}
+pub fn default_theme_id() -> String {
+    crate::app::theme::default_theme_id().to_string()
+}
 
 // Complete configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -78,7 +86,11 @@ impl Config {
         #[cfg(not(target_os = "windows"))]
         {
             let home_dir = dirs::home_dir().unwrap_or_else(|| PathBuf::from("."));
-            home_dir.join("dashboard").join("instances").to_string_lossy().to_string()
+            home_dir
+                .join("dashboard")
+                .join("instances")
+                .to_string_lossy()
+                .to_string()
         }
     }
 
@@ -93,7 +105,7 @@ impl Config {
         let app_data_dir = dirs::data_dir()
             .unwrap_or_else(|| home_dir.clone())
             .join("dashboard");
-        
+
         Self {
             application: ApplicationConfig {
                 name: crate::app::APP_NAME.to_string(),

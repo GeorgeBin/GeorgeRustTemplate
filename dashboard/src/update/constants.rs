@@ -19,7 +19,11 @@ pub fn release_base_url_for_timezone(timezone: &str) -> &'static str {
 }
 
 pub fn release_url_for_timezone(timezone: &str) -> String {
-    format!("{}{}", release_base_url_for_timezone(timezone), PROJECT_RELEASES_PATH)
+    format!(
+        "{}{}",
+        release_base_url_for_timezone(timezone),
+        PROJECT_RELEASES_PATH
+    )
 }
 
 #[cfg(feature = "update-check")]

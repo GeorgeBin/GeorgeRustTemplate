@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use slint::{ComponentHandle, ModelRc, SharedString, VecModel};
 
-use crate::{i18n, AppWindow, Theme};
+use crate::{AppWindow, Theme, i18n};
 
 pub struct ThemeDefinition {
     pub id: &'static str,
@@ -77,7 +77,8 @@ pub fn apply_theme(app: &AppWindow, theme_id: &str) -> &'static str {
     let normalized = normalize_theme_id(theme_id);
     app.set_theme_id(normalized.into());
     app.set_selected_theme_index(selected_theme_index(normalized) as i32);
-    app.global::<Theme>().set_dark_mode(resolve_dark_mode(normalized));
+    app.global::<Theme>()
+        .set_dark_mode(resolve_dark_mode(normalized));
     normalized
 }
 
