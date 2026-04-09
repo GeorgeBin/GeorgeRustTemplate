@@ -3,9 +3,9 @@
 //! 这是跨平台 NTP 客户端的核心逻辑模块。
 //! 不包含任何 UI 或平台特定代码。
 
+use std::io;
 use std::net::UdpSocket;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
-use std::io;
 use thiserror::Error;
 
 /// NTP 协议常量
@@ -48,12 +48,28 @@ impl NtpClient {
         let mut buffer = [0u8; 48];
         socket.recv(&mut buffer)?;
 
-        // 解析 40~43 字节：Transmit Timestamp seconds
-        let secs = u32::from_be_bytes(buffer[40..44].try_into().unwrap()) as u64;
-        let ntp_time = secs - NTP_TIMESTAMP_DELTA;
-
-        Ok(UNIX_EPOCH + Duration::from_secs(ntp_time))
+        parse_transmit_timestamp(&buffer)
     }
+}
+
+pub fn parse_transmit_timestamp(packet: &[u8]) -> Result<SystemTime, NtpError> {
+    if packet.len() < 48 {
+        return Err(NtpError::InvalidResponse);
+    }
+
+    // 解析 40~43 字节：Transmit Timestamp seconds
+    let secs = u32::from_be_bytes(
+        packet[40..44]
+            .try_into()
+            .map_err(|_| NtpError::InvalidResponse)?,
+    ) as u64;
+
+    if secs < NTP_TIMESTAMP_DELTA {
+        return Err(NtpError::InvalidResponse);
+    }
+
+    let unix_secs = secs - NTP_TIMESTAMP_DELTA;
+    Ok(UNIX_EPOCH + Duration::from_secs(unix_secs))
 }
 
 /// 错误类型
@@ -69,7 +85,6 @@ pub enum NtpError {
     Unknown,
 }
 
-
 pub const DEFAULT_NTP_SERVER: &str = "pool.ntp.org:123";
 
 #[cfg(test)]
@@ -77,10 +92,33 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_sync_time() {
-        let client = NtpClient::new(DEFAULT_NTP_SERVER);
-        let result = client.sync_time();
-        println!("{:?}", result);
-        assert!(result.is_ok());
+    fn parses_valid_transmit_timestamp() {
+        let mut packet = [0u8; 48];
+        let unix_secs = 1_700_000_000u64;
+        let ntp_secs = unix_secs + NTP_TIMESTAMP_DELTA;
+        packet[40..44].copy_from_slice(&(ntp_secs as u32).to_be_bytes());
+
+        let parsed = parse_transmit_timestamp(&packet).unwrap();
+        let parsed_secs = parsed.duration_since(UNIX_EPOCH).unwrap().as_secs();
+
+        assert_eq!(parsed_secs, unix_secs);
+    }
+
+    #[test]
+    fn rejects_short_packets() {
+        let packet = [0u8; 47];
+        let result = parse_transmit_timestamp(&packet);
+
+        assert!(matches!(result, Err(NtpError::InvalidResponse)));
+    }
+
+    #[test]
+    fn rejects_timestamps_before_unix_epoch() {
+        let mut packet = [0u8; 48];
+        packet[40..44].copy_from_slice(&1u32.to_be_bytes());
+
+        let result = parse_transmit_timestamp(&packet);
+
+        assert!(matches!(result, Err(NtpError::InvalidResponse)));
     }
 }
