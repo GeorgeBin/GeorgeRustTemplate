@@ -11,7 +11,7 @@ edition = "2024"
 #slint = { workspace = true }
 
 [build-dependencies]
-#slint-build = "1.12.1" # UI框架
+#slint-build = "1.15.1" # UI框架
 #winresource = "0.1.23" # 给 exe 添加图标
 
 

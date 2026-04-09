@@ -13,7 +13,8 @@ resolver = "3"
 # 公共依赖
 [workspace.dependencies]
 tokio = { version = "1.48.0", features = ["full"] }
-slint = "1.12.1"
+slint = "=1.15.1"
+slint-build = "=1.15.1"
 uniffi = "0.30.0"
 
 [profile.release]

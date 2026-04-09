@@ -19,7 +19,7 @@ update-check = []
 expiry-check = []
 
 [dependencies]
-slint = { version = "1.14", features = ["backend-winit", "unstable-winit-030"] }
+slint = { workspace = true, features = ["backend-winit", "unstable-winit-030"] }
 tokio = { version = "1.38", features = ["rt-multi-thread", "macros", "sync", "time", "process", "io-util"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt", "registry"] }
@@ -40,7 +40,12 @@ rust-embed = "8.5"
 once_cell = "1.19"
 
 [build-dependencies]
-slint-build = "1.14"
+slint-build = { workspace = true }
 embed-resource = "2.5"
 image = "0.25"
 toml = "0.9.10"
+
+[package.metadata.bundle]
+identifier = "com.georgebindragon.dashboard"
+icon = ["dashboard/assets/logo/logo.icns"]
+osx_url_schemes = ["com.georgebindragon.dashboard"]

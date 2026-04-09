@@ -15,7 +15,7 @@ protobuf = "3.7.2"
 # thiserror = "2.0.17"
 
 [build-dependencies]
-slint-build = "1.12.1" # UI框架
+slint-build = { workspace = true } # UI框架
 winresource = "0.1.23" # 给 exe 添加图标
 
 # 打包：Windows、macOS-Intel
