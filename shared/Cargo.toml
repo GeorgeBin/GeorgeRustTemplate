@@ -3,6 +3,10 @@ name = "shared"
 version = "0.1.0"
 edition = "2024"
 
+[features]
+default = []
+ohos = []
+
 [lib]
 crate-type = ["cdylib"] # Android 用 .so
 name = "rsShared"  # 库名称：生成 so 的文件名
