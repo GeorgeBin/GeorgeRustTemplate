@@ -13,6 +13,7 @@ captures/
 .gradle
 .externalNativeBuild/
 .cxx/
+.ai/
 
 # CMake
 cmake-build-*/
@@ -22,6 +23,7 @@ cmake-build-*/
 *.ipr
 *.log
 *.apk
+*.aab
 
 # 签名文件（默认忽略，如果需要增加，可自行添加）
 *.jks
@@ -54,12 +56,13 @@ fabric.properties
 # ------ .idea 目录 ------
 
 # 直接忽略整个 idea 目录
-.idea/
+.idea/*
 
 ## 可以保留必要的团队共享配置
 
-# .idea/codeStyles/ → 代码风格配置（如 codeStyleConfig.xml）。
-!.idea/codeStyles/
+# 代码风格配置（如 codeStyleConfig.xml）。
+# !.idea/codeStyles/
+# !.idea/codeStyles/**
 
 # .idea/inspectionProfiles/ → 代码检查规则。
 # !.idea/inspectionProfiles/
@@ -73,7 +76,9 @@ fabric.properties
 # .idea/.gitignore → 忽略规则（若 IDE 生成）。
 # !.idea/.gitignore
 
+# 保留的
 
+!gradle/wrapper/gradle-wrapper.jar
 
 # ----------- 其他语言 -----------
 
@@ -81,6 +86,9 @@ fabric.properties
 # Rust
 
 Cargo.lock
+# 仅保留此目录下的 lock 文件
+!/Cargo.lock
+
 
 target/
 debug/
@@ -97,18 +105,6 @@ debug/
 
 # ----------- 待处理 -----------
 
-
-# ------ IntelliJ IDEA  ------
-
-!gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-### IntelliJ IDEA ###
-
-!**/src/main/**/out/
-!**/src/test/**/out/
-
 ### Kotlin ###
 .kotlin
 
@@ -121,8 +117,7 @@ debug/
 .springBeans
 .sts4-cache
 bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
+
 
 ### NetBeans ###
 /nbproject/private/
