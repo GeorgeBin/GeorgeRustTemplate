@@ -68,6 +68,6 @@ cargo bundle -p dashboard --release --target x86_64-apple-darwin
 
 ## 代码入口
 
-- UI 入口：`src/ui/slint/app.slint`
+- UI 入口：`assets/slint/app.slint`
 - 应用启动入口：`src/main.rs`
 - 配置与系统信息：`src/config/mod.rs`
