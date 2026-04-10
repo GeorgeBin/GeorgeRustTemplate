@@ -54,8 +54,7 @@ fn main() -> Result<(), slint::PlatformError> {
 
     // corelib 内方法的调用
     {
-        corelib::add(1, 2);
-        let valid = corelib::utils::is_valid_ipv4("192.168.1.1".to_string());
+        let valid = baselib::ip::is_valid_ipv4("192.168.1.1");
         let callback_result = callback::calculate("192.168.1.1".to_string());
         println!("is valid ipv4={valid}");
         println!("callback result={callback_result}");

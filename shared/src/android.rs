@@ -2,7 +2,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 #[uniffi::export]
 pub fn is_valid_ipv4(ip: String) -> bool {
-    corelib::utils::is_valid_ipv4(ip)
+    baselib::ip::is_valid_ipv4(&ip)
 }
 
 #[derive(Debug, uniffi::Error)]

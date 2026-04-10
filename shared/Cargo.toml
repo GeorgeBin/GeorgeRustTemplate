@@ -12,6 +12,7 @@ crate-type = ["cdylib"] # Android 用 .so
 name = "rsShared"  # 库名称：生成 so 的文件名
 
 [dependencies]
+baselib = { path = "../baselib" }
 corelib = { path = "../corelib" }
 uniffi = { workspace = true }
 # serde = { version = "1.0.219", features = ["derive"] }
