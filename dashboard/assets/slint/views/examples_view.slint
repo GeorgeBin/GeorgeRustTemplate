@@ -1,0 +1,209 @@
+import { Theme, AppI18n } from "../theme.slint";
+import {
+    CustomLineEdit,
+    CustomButton,
+} from "../components/form_widgets.slint";
+
+component ExampleCard inherits Rectangle {
+    in property <string> title;
+    in property <string> description;
+
+    background: Theme.card_bg;
+    border-radius: 10px;
+    border-width: 1px;
+    border-color: Theme.border_color;
+
+    VerticalLayout {
+        padding: 18px;
+        spacing: 14px;
+
+        VerticalLayout {
+            spacing: 6px;
+
+            Text {
+                text: root.title;
+                color: Theme.text_primary;
+                font-size: 16px;
+                font-weight: 700;
+            }
+
+            Text {
+                text: root.description;
+                color: Theme.text_secondary;
+                font-size: 13px;
+                wrap: word-wrap;
+            }
+        }
+    }
+}
+
+export component ExamplesView inherits VerticalLayout {
+    in-out property <string> ntp_host: "pool.ntp.org";
+    in-out property <string> ntp_result: "";
+    in-out property <bool> ntp_loading: false;
+    in-out property <int> example_counter: 42;
+    in-out property <string> example_status: "";
+
+    callback request-ntp();
+    callback increment-counter();
+    callback report-counter(int);
+    callback add-ten(int) -> int;
+
+    spacing: 14px;
+    padding-left: 4px;
+    padding-right: 16px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+
+    Rectangle {
+        background: Theme.card_bg;
+        border-radius: 12px;
+        border-width: 1px;
+        border-color: Theme.border_color;
+        min-height: 132px;
+
+        VerticalLayout {
+            padding: 24px;
+            spacing: 10px;
+
+            Text {
+                text: AppI18n.t("examples.title", [AppI18n.version]);
+                color: Theme.text_primary;
+                font-size: 24px;
+                font-weight: 800;
+            }
+
+            Text {
+                text: AppI18n.t("examples.description", [AppI18n.version]);
+                color: Theme.text_secondary;
+                font-size: 14px;
+                wrap: word-wrap;
+            }
+        }
+    }
+
+    ExampleCard {
+        title: AppI18n.t("examples.ntp.title", [AppI18n.version]);
+        description: AppI18n.t("examples.ntp.description", [AppI18n.version]);
+
+        VerticalLayout {
+            padding: 18px;
+            spacing: 14px;
+
+            Text {
+                text: AppI18n.t("examples.ntp.server_label", [AppI18n.version]);
+                font-size: 13px;
+                color: Theme.text_secondary;
+            }
+
+            HorizontalLayout {
+                spacing: 12px;
+
+                CustomLineEdit {
+                    horizontal-stretch: 1;
+                    text <=> root.ntp_host;
+                    placeholder-text: AppI18n.t("examples.ntp.server_placeholder", [AppI18n.version]);
+                }
+
+                query-button := CustomButton {
+                    width: 128px;
+                    primary: true;
+                    enabled: !root.ntp_loading;
+                    text: root.ntp_loading ? AppI18n.t("examples.ntp.querying", [AppI18n.version]) : AppI18n.t("examples.ntp.query", [AppI18n.version]);
+                    clicked => {
+                        root.request-ntp();
+                    }
+                }
+            }
+
+            Rectangle {
+                background: Theme.input_bg;
+                border-radius: 8px;
+                border-width: 1px;
+                border-color: Theme.input_border;
+                min-height: 72px;
+
+                Text {
+                    x: 12px;
+                    y: 12px;
+                    width: parent.width - 24px;
+                    text: root.ntp_result == "" ? AppI18n.t("examples.ntp.result_idle", [AppI18n.version]) : root.ntp_result;
+                    color: root.ntp_result == "" ? Theme.text_secondary : Theme.text_primary;
+                    font-size: 13px;
+                    wrap: word-wrap;
+                }
+            }
+        }
+    }
+
+    ExampleCard {
+        title: AppI18n.t("examples.interaction.title", [AppI18n.version]);
+        description: AppI18n.t("examples.interaction.description", [AppI18n.version]);
+
+        VerticalLayout {
+            padding: 18px;
+            spacing: 14px;
+
+            Text {
+                text: AppI18n.t("examples.interaction.counter", [AppI18n.version]) + ": " + root.example_counter;
+                font-size: 14px;
+                font-weight: 600;
+                color: Theme.text_primary;
+            }
+
+            HorizontalLayout {
+                spacing: 12px;
+
+                CustomButton {
+                    primary: true;
+                    text: AppI18n.t("examples.interaction.no_arg", [AppI18n.version]);
+                    clicked => {
+                        root.increment-counter();
+                    }
+                }
+
+                CustomButton {
+                    text: AppI18n.t("examples.interaction.with_arg", [AppI18n.version]);
+                    clicked => {
+                        root.report-counter(root.example_counter);
+                    }
+                }
+
+                CustomButton {
+                    text: AppI18n.t("examples.interaction.with_return", [AppI18n.version]);
+                    clicked => {
+                        root.example_counter = root.add-ten(root.example_counter);
+                    }
+                }
+            }
+
+            VerticalLayout {
+                spacing: 6px;
+
+                Text {
+                    text: AppI18n.t("examples.interaction.status", [AppI18n.version]);
+                    font-size: 13px;
+                    color: Theme.text_secondary;
+                }
+
+                Rectangle {
+                    background: Theme.input_bg;
+                    border-radius: 8px;
+                    border-width: 1px;
+                    border-color: Theme.input_border;
+                    min-height: 72px;
+
+                    Text {
+                        x: 12px;
+                        y: 12px;
+                        width: parent.width - 24px;
+                        text: root.example_status == "" ? AppI18n.t("examples.interaction.status_idle", [AppI18n.version]) : root.example_status;
+                        color: root.example_status == "" ? Theme.text_secondary : Theme.text_primary;
+                        font-size: 13px;
+                        wrap: word-wrap;
+                    }
+                }
+            }
+        }
+    }
+}

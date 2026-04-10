@@ -1,7 +1,37 @@
 [sidebar]
 home = "Home"
+examples = "Examples"
 settings = "Settings"
 about = "About"
+
+[examples]
+title = "Built-in Examples"
+description = "This page keeps the most reusable example pieces: a practical NTP tool and a compact Slint interaction reference."
+
+[examples.ntp]
+title = "NTP Query Tool"
+description = "Query an NTP server from the desktop shell and display the returned server time."
+server_label = "NTP server"
+server_placeholder = "Enter a host name or host:port"
+query = "Query time"
+querying = "Querying..."
+result_idle = "Enter a server address and start a query."
+empty_host = "Please enter an NTP server address."
+success = "Query succeeded: {0}"
+failure = "Query failed: {0}"
+
+[examples.interaction]
+title = "Slint Interaction Demo"
+description = "A compact reference for property binding, callbacks without arguments, callbacks with arguments, and callbacks with return values."
+counter = "Counter"
+no_arg = "Rust callback: increment"
+with_arg = "Rust callback: report counter"
+with_return = "Rust callback: add 10 and return"
+status = "Status"
+status_idle = "Trigger any example button to see the current callback result."
+no_arg_result = "No-arg callback executed. Counter incremented to {0}."
+arg_result = "Argument callback executed with current counter = {0}."
+return_result = "Return callback executed. {0} -> {1}."
 
 [settings]
 language = "Software Language"
@@ -61,7 +91,7 @@ update_failed = "Update check failed: {0}"
 
 [about]
 title = "About This Shell"
-description = "Desktop Demo Shell is a lightweight native shell for demos and product prototypes. It keeps window chrome, navigation, persisted settings, localization support, and update checks ready for reuse."
+description = "Desktop Demo Shell is a lightweight native shell for product prototypes and built-in examples. It keeps window chrome, navigation, persisted settings, localization support, and update checks ready for reuse."
 version = "Version"
 check_update = "Checking for updates..."
 new_version = "A new version is available: v{0}"

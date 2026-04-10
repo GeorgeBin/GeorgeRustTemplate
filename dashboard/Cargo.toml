@@ -19,6 +19,7 @@ update-check = []
 expiry-check = []
 
 [dependencies]
+corelib = { path = "../corelib" }
 slint = { workspace = true, features = ["backend-winit", "unstable-winit-030"] }
 tokio = { version = "1.38", features = ["rt-multi-thread", "macros", "sync", "time", "process", "io-util"] }
 tracing = "0.1"
@@ -46,6 +47,11 @@ image = "0.25"
 toml = "0.9.10"
 
 [package.metadata.bundle]
+name = "Desktop Demo Shell"
 identifier = "com.georgebindragon.dashboard"
+short_description = "A lightweight native desktop shell built with Rust and Slint."
+long_description = "A lightweight native desktop shell used to host future product prototypes and built-in examples."
+copyright = "2026 Desktop Demo Shell. All rights reserved."
+category = "Developer Tool"
 icon = ["dashboard/assets/logo/logo.icns"]
 osx_url_schemes = ["com.georgebindragon.dashboard"]

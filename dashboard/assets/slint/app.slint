@@ -3,6 +3,7 @@ import { TitleBar } from "components/title_bar.slint";
 import { Sidebar } from "components/sidebar.slint";
 import { ModalManager } from "components/modal_manager.slint";
 import { MainView } from "views/main_view.slint";
+import { ExamplesView } from "views/examples_view.slint";
 import { SettingsView } from "views/settings_view.slint";
 import { AboutView } from "views/about_view.slint";
 
@@ -21,6 +22,11 @@ export component AppWindow inherits Window {
     in property <bool> show_window_controls: false;
     in-out property <bool> sidebar_collapsed: false;
     private property <bool> auto_sidebar_collapsed: false;
+    in-out property <string> ntp_host: "pool.ntp.org";
+    in-out property <string> ntp_result: "";
+    in-out property <bool> ntp_loading: false;
+    in-out property <int> example_counter: 42;
+    in-out property <string> example_status: "";
     in-out property <string> ui_language: "auto";
     in-out property <string> theme_id: "system";
     in-out property <[string]> theme_options: ["Follow system", "Light", "Dark"];
@@ -39,6 +45,10 @@ export component AppWindow inherits Window {
 
     callback select_tab(int);
     callback open_url(string);
+    callback request_ntp_time();
+    callback example_increment();
+    callback example_report_counter(int);
+    callback example_add_ten(int) -> int;
     callback check_update();
     callback download_update();
     callback close_expire_dialog();
@@ -113,7 +123,27 @@ export component AppWindow inherits Window {
 
                         if (selected_tab == 0): MainView {}
 
-                        if (selected_tab == 1): SettingsView {
+                        if (selected_tab == 1): ExamplesView {
+                            ntp_host <=> root.ntp_host;
+                            ntp_result <=> root.ntp_result;
+                            ntp_loading <=> root.ntp_loading;
+                            example_counter <=> root.example_counter;
+                            example_status <=> root.example_status;
+                            request-ntp => {
+                                root.request_ntp_time();
+                            }
+                            increment-counter => {
+                                root.example_increment();
+                            }
+                            report-counter(value) => {
+                                root.example_report_counter(value);
+                            }
+                            add-ten(value) => {
+                                return root.example_add_ten(value);
+                            }
+                        }
+
+                        if (selected_tab == 2): SettingsView {
                             ui_language <=> root.ui_language;
                             theme_options <=> root.theme_options;
                             selected_theme_index <=> root.selected_theme_index;
@@ -137,7 +167,7 @@ export component AppWindow inherits Window {
                             }
                         }
 
-                        if (selected_tab == 2): AboutView {
+                        if (selected_tab == 3): AboutView {
                             open_url(url) => {
                                 root.open_url(url);
                             }

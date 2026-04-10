@@ -1,7 +1,37 @@
 [sidebar]
 home = "首页"
+examples = "示例"
 settings = "设置"
 about = "关于"
+
+[examples]
+title = "内置示例"
+description = "这里保留了最值得复用的示例内容：一个可实际使用的 NTP 查询工具，以及一组精简的 Slint 交互示例。"
+
+[examples.ntp]
+title = "NTP 查询工具"
+description = "在桌面壳中查询 NTP 服务器，并显示返回的服务器时间。"
+server_label = "NTP 服务器"
+server_placeholder = "输入主机名或 host:port"
+query = "查询时间"
+querying = "查询中..."
+result_idle = "输入服务器地址后开始查询。"
+empty_host = "请输入 NTP 服务器地址。"
+success = "查询成功：{0}"
+failure = "查询失败：{0}"
+
+[examples.interaction]
+title = "Slint 交互示例"
+description = "这里集中展示属性绑定、无参回调、带参回调和带返回值回调这几类最常用的交互模式。"
+counter = "计数器"
+no_arg = "Rust 回调：递增"
+with_arg = "Rust 回调：上报计数"
+with_return = "Rust 回调：加 10 并返回"
+status = "状态"
+status_idle = "点击任意示例按钮后，这里会显示当前回调执行结果。"
+no_arg_result = "已执行无参回调，计数器更新为 {0}。"
+arg_result = "已执行带参回调，当前计数器 = {0}。"
+return_result = "已执行返回值回调，{0} -> {1}。"
 
 [settings]
 language = "软件语言"
@@ -61,7 +91,7 @@ update_failed = "检查更新失败：{0}"
 
 [about]
 title = "关于此应用"
-description = "Desktop Demo Shell 是一个轻量级原生桌面壳层，用于承载演示内容和产品原型。它保留了窗口框架、导航、设置持久化、多语言和更新检查等可复用基础能力。"
+description = "Desktop Demo Shell 是一个轻量级原生桌面壳层，用于承载产品原型与内置示例。它保留了窗口框架、导航、设置持久化、多语言和更新检查等可复用基础能力。"
 version = "版本信息"
 check_update = "正在检查更新..."
 new_version = "发现新版本: v{0}"
