@@ -2,7 +2,7 @@
 #[allow(dead_code)]
 pub const APP_NAME: &str = "Desktop Demo Shell";
 #[allow(dead_code)]
-pub const APP_ID: &str = "dashboard";
+pub const APP_ID: &str = "demo";
 #[allow(dead_code)]
 pub const COMPANY_NAME: &str = APP_NAME;
 #[allow(dead_code)]

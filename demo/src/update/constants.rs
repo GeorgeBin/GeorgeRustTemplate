@@ -1,5 +1,5 @@
-pub const PROJECT_HOMEPAGE: &str = "https://github.com/xxx/dashboard";
-pub const PROJECT_CN_RELEASE_BASE: &str = "https://gitee.com/bye/dashboard";
+pub const PROJECT_HOMEPAGE: &str = "https://github.com/xxx/demo";
+pub const PROJECT_CN_RELEASE_BASE: &str = "https://gitee.com/bye/demo";
 pub const PROJECT_ISSUES_PATH: &str = "/issues";
 pub const PROJECT_RELEASES_PATH: &str = "/releases";
 #[cfg(feature = "update-check")]
@@ -7,7 +7,7 @@ pub const STATIC_API_FREE: &str = "https://raw.githubusercontent.com/xxx/oss/ref
 #[cfg(feature = "update-check")]
 pub const STATIC_API_CN: &str = "https://gitee.com/bye/oss/raw";
 #[cfg(feature = "update-check")]
-pub const UPDATE_CHECK_API: &str = "/main/dashboard/api/base.json";
+pub const UPDATE_CHECK_API: &str = "/main/demo/api/base.json";
 pub const ZH_TIMEZONE: &str = "UTC+08:00";
 
 pub fn release_base_url_for_timezone(timezone: &str) -> &'static str {

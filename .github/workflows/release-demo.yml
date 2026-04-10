@@ -1,4 +1,4 @@
-name: Release Dashboard
+name: Release Demo
 
 permissions:
   contents: write
@@ -15,7 +15,7 @@ env:
 
 jobs:
   build-and-release:
-    name: Build dashboard and publish release
+    name: Build demo and publish release
     runs-on: windows-latest
 
     steps:
@@ -29,7 +29,7 @@ jobs:
           targets: x86_64-pc-windows-gnu
 
       - name: Build release
-        run: cargo build --package dashboard --release --target x86_64-pc-windows-gnu
+        run: cargo build --package demo --release --target x86_64-pc-windows-gnu
 
       - name: Get version
         id: get_version
@@ -43,10 +43,10 @@ jobs:
         shell: pwsh
         run: |
           $version = "${{ steps.get_version.outputs.VERSION }}"
-          Move-Item target/x86_64-pc-windows-gnu/release/dashboard.exe target/x86_64-pc-windows-gnu/release/dashboard.v$version.exe
+          Move-Item target/x86_64-pc-windows-gnu/release/demo.exe target/x86_64-pc-windows-gnu/release/demo.v$version.exe
 
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
-          files: target/x86_64-pc-windows-gnu/release/dashboard.v${{ steps.get_version.outputs.VERSION }}.exe
+          files: target/x86_64-pc-windows-gnu/release/demo.v${{ steps.get_version.outputs.VERSION }}.exe
           generate_release_notes: true

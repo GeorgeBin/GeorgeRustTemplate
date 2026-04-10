@@ -20,11 +20,11 @@ lint:
 
 verify: fmt-check check test lint
 
-run-dashboard:
-  cargo run -p dashboard
+run-demo:
+  cargo run -p demo
 
-build-dashboard:
-  cargo build -p dashboard --release
+build-demo:
+  cargo build -p demo --release
 
 build-shared-android:
   ./unleash/build_shared_android_so.sh

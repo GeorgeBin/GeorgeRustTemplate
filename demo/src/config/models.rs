@@ -87,7 +87,7 @@ impl Config {
         {
             let home_dir = dirs::home_dir().unwrap_or_else(|| PathBuf::from("."));
             home_dir
-                .join("dashboard")
+                .join("demo")
                 .join("instances")
                 .to_string_lossy()
                 .to_string()
@@ -99,12 +99,12 @@ impl Config {
         let home_dir = dirs::home_dir().unwrap_or_else(|| PathBuf::from("."));
 
         #[cfg(target_os = "windows")]
-        let app_data_dir = PathBuf::from(format!("{}\\.dashboard", home_dir.to_string_lossy()));
+        let app_data_dir = PathBuf::from(format!("{}\\.demo", home_dir.to_string_lossy()));
 
         #[cfg(not(target_os = "windows"))]
         let app_data_dir = dirs::data_dir()
             .unwrap_or_else(|| home_dir.clone())
-            .join("dashboard");
+            .join("demo");
 
         Self {
             application: ApplicationConfig {

@@ -4,8 +4,8 @@ set -e
 # ==========================
 # 🌍 配置部分
 # ==========================
-# 历史脚本名保留不变，实际构建项目正式桌面端 dashboard
-PACKAGE="dashboard"           # Cargo.toml 中的 package 名称
+# 历史脚本名保留不变，实际构建项目正式桌面端 demo
+PACKAGE="demo"           # Cargo.toml 中的 package 名称
 MODE="release"           # 编译类型: debug / release
 TARGETS=(
     # 需要编译的平台列表

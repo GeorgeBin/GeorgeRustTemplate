@@ -74,7 +74,7 @@ pub fn init_logging(log_dir: &str, level_num: u8) -> LoggingSystem {
     let (non_blocking, guard) = match build_file_appender(log_dir) {
         Ok(appender) => tracing_appender::non_blocking(appender),
         Err(primary_err) => {
-            let fallback_dir = std::env::temp_dir().join("dashboard").join("logs");
+            let fallback_dir = std::env::temp_dir().join("demo").join("logs");
             match build_file_appender(fallback_dir.to_string_lossy().as_ref()) {
                 Ok(appender) => tracing_appender::non_blocking(appender),
                 Err(fallback_err) => {
@@ -159,7 +159,7 @@ fn build_file_appender(log_dir: &str) -> std::io::Result<RollingFileAppender> {
     std::fs::create_dir_all(log_dir)?;
     RollingFileAppender::builder()
         .rotation(tracing_appender::rolling::Rotation::DAILY)
-        .filename_prefix("dashboard")
+        .filename_prefix("demo")
         .filename_suffix("log")
         .build(log_dir)
         .map_err(std::io::Error::other)
@@ -185,12 +185,12 @@ pub fn cleanup_expired_logs(log_dir: &str, log_days: u8) {
                 continue;
             };
 
-            if !file_name.starts_with("dashboard.") || !file_name.ends_with(".log") {
+            if !file_name.starts_with("demo.") || !file_name.ends_with(".log") {
                 continue;
             }
 
             let date_part = file_name
-                .trim_start_matches("dashboard.")
+                .trim_start_matches("demo.")
                 .trim_end_matches(".log");
 
             if let Ok(file_date) = chrono::NaiveDate::parse_from_str(date_part, "%Y-%m-%d")

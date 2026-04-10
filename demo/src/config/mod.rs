@@ -20,7 +20,7 @@ impl ConfigManager {
     // Get configuration file path
     fn get_config_path() -> PathBuf {
         let home_dir = dirs::home_dir().unwrap_or_else(|| PathBuf::from("."));
-        home_dir.join(".dashboard").join("settings.toml")
+        home_dir.join(".demo").join("settings.toml")
     }
 
     // Initialize configuration manager
