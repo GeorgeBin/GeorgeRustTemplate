@@ -10,8 +10,10 @@ fn main() {
 
     // Read Cargo.toml to get custom 'expire' field
     let cargo_toml_path = Path::new("Cargo.toml");
-    let cargo_toml_content = fs::read_to_string(cargo_toml_path).expect("Failed to read Cargo.toml");
-    let cargo_toml: Value = toml::from_str(&cargo_toml_content).expect("Failed to parse Cargo.toml");
+    let cargo_toml_content =
+        fs::read_to_string(cargo_toml_path).expect("Failed to read Cargo.toml");
+    let cargo_toml: Value =
+        toml::from_str(&cargo_toml_content).expect("Failed to parse Cargo.toml");
 
     let mut expire_time = cargo_toml
         .get("package")
@@ -26,13 +28,12 @@ fn main() {
             .duration_since(std::time::UNIX_EPOCH)
             .expect("Time went backwards")
             .as_millis() as i64;
-            
+
         // 365 days later
         expire_time = now + (365 * 24 * 60 * 60 * 1000);
     }
 
     println!("cargo:rustc-env=APP_EXPIRE_TIME={}", expire_time);
-
 
     #[cfg(windows)]
     {
@@ -50,8 +51,12 @@ fn main() {
             let resized_img = img.resize_to_fill(256, 256, image::imageops::FilterType::Lanczos3);
             resized_img.save(ico_path).expect("Failed to save ICO file");
 
-            let version = std::env::var("CARGO_PKG_VERSION").unwrap_or_else(|_| "0.0.1".to_string());
-            let mut version_parts = version.split('.').map(|p| p.parse::<u16>().unwrap_or(0)).collect::<Vec<_>>();
+            let version =
+                std::env::var("CARGO_PKG_VERSION").unwrap_or_else(|_| "0.0.1".to_string());
+            let mut version_parts = version
+                .split('.')
+                .map(|p| p.parse::<u16>().unwrap_or(0))
+                .collect::<Vec<_>>();
             while version_parts.len() < 3 {
                 version_parts.push(0);
             }
@@ -63,7 +68,8 @@ fn main() {
 
             std::fs::write(
                 icon_rc_path,
-                format!(r#"#include <windows.h>
+                format!(
+                    r#"#include <windows.h>
 
 IDI_ICON1 ICON "logo.ico"
 
@@ -100,19 +106,20 @@ BEGIN
         VALUE "Translation", 0x409, 1200
     END
 END
-"#, 
-    company_name = constants::COMPANY_NAME,
-    file_description = file_description,
-    app_id = constants::APP_ID,
-    copyright = constants::LEGAL_COPYRIGHT,
-    github_url = constants::GITHUB_URL,
-    original_filename = original_filename,
-    app_name = constants::APP_NAME,
-    major = major,
-    minor = minor,
-    patch = patch
-)
-            ).expect("Failed to write icon.rc");
+"#,
+                    company_name = constants::COMPANY_NAME,
+                    file_description = file_description,
+                    app_id = constants::APP_ID,
+                    copyright = constants::LEGAL_COPYRIGHT,
+                    github_url = constants::GITHUB_URL,
+                    original_filename = original_filename,
+                    app_name = constants::APP_NAME,
+                    major = major,
+                    minor = minor,
+                    patch = patch
+                ),
+            )
+            .expect("Failed to write icon.rc");
 
             embed_resource::compile(icon_rc_path, std::iter::empty::<&std::ffi::OsStr>());
         }
