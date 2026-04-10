@@ -13,6 +13,29 @@ mod callback;
 slint::include_modules!();
 
 fn main() -> Result<(), slint::PlatformError> {
+    let logging = baselib::logging::init_logging(baselib::logging::LogConfig {
+        enabled: true,
+        level: baselib::logging::LogLevel::Info,
+        console: baselib::logging::ConsoleLogConfig { enabled: true },
+        file: baselib::logging::FileLogConfig {
+            enabled: true,
+            directory: std::path::PathBuf::from("./logs"),
+            file_prefix: "demo".to_string(),
+        },
+        cleanup: baselib::logging::CleanupConfig {
+            enabled: true,
+            max_retention_days: 7,
+        },
+    });
+    if let Ok(logging) = logging {
+        let _ = logging.apply_runtime_config(baselib::logging::RuntimeLogConfig {
+            enabled: true,
+            level: baselib::logging::LogLevel::Info,
+            console_enabled: true,
+            file_enabled: true,
+        });
+    }
+
     println!("Hello main!");
 
     // UI - demo.slint

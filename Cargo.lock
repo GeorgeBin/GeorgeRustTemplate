@@ -550,6 +550,13 @@ checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
 [[package]]
 name = "baselib"
 version = "0.1.0"
+dependencies = [
+ "chrono",
+ "thiserror 2.0.17",
+ "tracing",
+ "tracing-appender",
+ "tracing-subscriber",
+]
 
 [[package]]
 name = "basic-toml"
@@ -1044,6 +1051,7 @@ name = "corelib"
 version = "0.1.0"
 dependencies = [
  "thiserror 2.0.17",
+ "tracing",
 ]
 
 [[package]]
