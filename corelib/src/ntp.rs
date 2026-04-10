@@ -85,7 +85,7 @@ pub enum NtpError {
     Unknown,
 }
 
-pub const DEFAULT_NTP_SERVER: &str = "pool.ntp.org:123";
+pub const DEFAULT_NTP_SERVER: &str = "ntp.aliyun.com:123";
 
 #[cfg(test)]
 mod tests {

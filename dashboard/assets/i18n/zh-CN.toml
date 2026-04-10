@@ -1,14 +1,11 @@
 [sidebar]
 home = "首页"
-examples = "示例"
+rust_examples = "Rust 示例"
+ntp = "NTP"
 settings = "设置"
 about = "关于"
 
-[examples]
-title = "内置示例"
-description = "这里保留了最值得复用的示例内容：一个可实际使用的 NTP 查询工具，以及一组精简的 Slint 交互示例。"
-
-[examples.ntp]
+[ntp]
 title = "NTP 查询工具"
 description = "在桌面壳中查询 NTP 服务器，并显示返回的服务器时间。"
 server_label = "NTP 服务器"
@@ -20,7 +17,11 @@ empty_host = "请输入 NTP 服务器地址。"
 success = "查询成功：{0}"
 failure = "查询失败：{0}"
 
-[examples.interaction]
+[rust_examples]
+title = "Rust 示例"
+description = "这里集中展示属性绑定、无参回调、带参回调和带返回值回调这几类最常用的交互模式。"
+
+[rust_examples.interaction]
 title = "Slint 交互示例"
 description = "这里集中展示属性绑定、无参回调、带参回调和带返回值回调这几类最常用的交互模式。"
 counter = "计数器"

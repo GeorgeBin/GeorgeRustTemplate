@@ -1,14 +1,11 @@
 [sidebar]
 home = "Home"
-examples = "Examples"
+rust_examples = "Rust Examples"
+ntp = "NTP"
 settings = "Settings"
 about = "About"
 
-[examples]
-title = "Built-in Examples"
-description = "This page keeps the most reusable example pieces: a practical NTP tool and a compact Slint interaction reference."
-
-[examples.ntp]
+[ntp]
 title = "NTP Query Tool"
 description = "Query an NTP server from the desktop shell and display the returned server time."
 server_label = "NTP server"
@@ -20,7 +17,11 @@ empty_host = "Please enter an NTP server address."
 success = "Query succeeded: {0}"
 failure = "Query failed: {0}"
 
-[examples.interaction]
+[rust_examples]
+title = "Rust Interaction Examples"
+description = "A compact reference for property binding, callbacks without arguments, callbacks with arguments, and callbacks with return values."
+
+[rust_examples.interaction]
 title = "Slint Interaction Demo"
 description = "A compact reference for property binding, callbacks without arguments, callbacks with arguments, and callbacks with return values."
 counter = "Counter"

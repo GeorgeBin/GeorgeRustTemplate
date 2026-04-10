@@ -15,7 +15,7 @@ pub fn setup(
         if let Some(app) = ah.upgrade() {
             let host = app.get_ntp_host().trim().to_string();
             if host.is_empty() {
-                app.set_ntp_result(i18n::t("examples.ntp.empty_host").into());
+                app.set_ntp_result(i18n::t("ntp.empty_host").into());
                 app.set_ntp_loading(false);
                 return;
             }
@@ -34,10 +34,10 @@ pub fn setup(
                 info!("Starting NTP query against {}", server);
                 let result = corelib::ntp::NtpClient::new(&server).sync_time();
                 let message = match result {
-                    Ok(time) => i18n::tr("examples.ntp.success", &[format_system_time(time)]),
+                    Ok(time) => i18n::tr("ntp.success", &[format_system_time(time)]),
                     Err(error) => {
                         warn!("NTP query failed for {}: {}", server, error);
-                        i18n::tr("examples.ntp.failure", &[error.to_string()])
+                        i18n::tr("ntp.failure", &[error.to_string()])
                     }
                 };
 
@@ -49,41 +49,6 @@ pub fn setup(
                 });
             });
         }
-    });
-
-    let ah = app_handle.clone();
-    app.on_example_increment(move || {
-        if let Some(app) = ah.upgrade() {
-            let next = app.get_example_counter() + 1;
-            app.set_example_counter(next);
-            app.set_example_status(
-                i18n::tr("examples.interaction.no_arg_result", &[next.to_string()]).into(),
-            );
-        }
-    });
-
-    let ah = app_handle.clone();
-    app.on_example_report_counter(move |value| {
-        if let Some(app) = ah.upgrade() {
-            app.set_example_status(
-                i18n::tr("examples.interaction.arg_result", &[value.to_string()]).into(),
-            );
-        }
-    });
-
-    let ah = app_handle.clone();
-    app.on_example_add_ten(move |value| {
-        let next = value + 10;
-        if let Some(app) = ah.upgrade() {
-            app.set_example_status(
-                i18n::tr(
-                    "examples.interaction.return_result",
-                    &[value.to_string(), next.to_string()],
-                )
-                .into(),
-            );
-        }
-        next
     });
 }
 

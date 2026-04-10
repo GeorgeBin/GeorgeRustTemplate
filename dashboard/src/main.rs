@@ -119,7 +119,8 @@ fn register_ui_handlers(
     app_state: Arc<Mutex<AppState>>,
 ) {
     handlers::common::setup(app, app_handle.clone(), app_state.clone());
-    handlers::examples::setup(app, app_handle.clone(), app_state.clone());
+    handlers::rust_examples::setup(app, app_handle.clone(), app_state.clone());
+    handlers::ntp::setup(app, app_handle.clone(), app_state.clone());
     handlers::window::setup(app, app_handle.clone());
     handlers::settings::setup(app, app_handle.clone(), app_state.clone());
     update::register_ui_handlers(app, app_handle, app_state);
