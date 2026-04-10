@@ -2,7 +2,6 @@
 members = [
     "baselib",
     "corelib",
-    "demo",
     "shared",
     "dashboard"
 ]
