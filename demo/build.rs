@@ -1,6 +1,3 @@
-#[path = "src/app/constants.rs"]
-mod constants;
-
 use std::fs;
 use std::path::Path;
 use toml::Value;
@@ -41,6 +38,7 @@ fn main() {
 
         let png_path = Path::new("assets/logo/logo.png");
         let ico_path = Path::new("assets/logo/logo.ico");
+        let icon_rc_path = Path::new("assets/logo/icon.rc");
 
         if !ico_path.exists() {
             let img = ImageReader::open(png_path)
@@ -57,75 +55,6 @@ fn main() {
         if !ico_path.exists() {
             panic!("No Windows icon found: expected assets/logo/logo.ico or assets/logo/logo.png");
         }
-
-        let version = std::env::var("CARGO_PKG_VERSION").unwrap_or_else(|_| "0.0.1".to_string());
-        let mut version_parts = version
-            .split('.')
-            .map(|p| p.parse::<u16>().unwrap_or(0))
-            .collect::<Vec<_>>();
-        while version_parts.len() < 3 {
-            version_parts.push(0);
-        }
-        let (major, minor, patch) = (version_parts[0], version_parts[1], version_parts[2]);
-
-        let icon_rc_path = Path::new("assets/logo/icon.rc");
-        let file_description = format!("{} - Management Tool for WSL", constants::APP_NAME);
-        let original_filename = format!("{}.exe", constants::APP_ID);
-
-        std::fs::write(
-            icon_rc_path,
-            format!(
-                r#"#include <windows.h>
-
-IDI_ICON1 ICON "logo.ico"
-
-VS_VERSION_INFO VERSIONINFO
- FILEVERSION {major},{minor},{patch},0
- PRODUCTVERSION {major},{minor},{patch},0
- FILEFLAGSMASK 0x3fL
-#ifdef _DEBUG
- FILEFLAGS 0x1L
-#else
- FILEFLAGS 0x0L
-#endif
- FILEOS 0x40004L
- FILETYPE 0x1L
- FILESUBTYPE 0x0L
-BEGIN
-    BLOCK "StringFileInfo"
-    BEGIN
-        BLOCK "040904b0"
-        BEGIN
-            VALUE "CompanyName", "{company_name}"
-            VALUE "FileDescription", "{file_description}"
-            VALUE "FileVersion", "{major}.{minor}.{patch}.0"
-            VALUE "InternalName", "{app_id}"
-            VALUE "LegalCopyright", "{copyright}"
-            VALUE "LegalTrademarks", "{github_url}"
-            VALUE "OriginalFilename", "{original_filename}"
-            VALUE "ProductName", "{app_name}"
-            VALUE "ProductVersion", "{major}.{minor}.{patch}.0"
-        END
-    END
-    BLOCK "VarFileInfo"
-    BEGIN
-        VALUE "Translation", 0x409, 1200
-    END
-END
-"#,
-                company_name = constants::COMPANY_NAME,
-                file_description = file_description,
-                app_id = constants::APP_ID,
-                copyright = constants::LEGAL_COPYRIGHT,
-                github_url = constants::GITHUB_URL,
-                original_filename = original_filename,
-                app_name = constants::APP_NAME,
-                major = major,
-                minor = minor,
-                patch = patch
-            ),
-        )
-        .expect("Failed to write icon.rc");
 
         embed_resource::compile(icon_rc_path, std::iter::empty::<&std::ffi::OsStr>());
     }
