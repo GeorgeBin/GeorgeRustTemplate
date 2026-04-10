@@ -1,0 +1,52 @@
+name: Release Dashboard
+
+permissions:
+  contents: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version, for example 0.1.0"
+        required: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-and-release:
+    name: Build dashboard and publish release
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable-x86_64-pc-windows-gnu
+          targets: x86_64-pc-windows-gnu
+
+      - name: Build release
+        run: cargo build --package dashboard --release --target x86_64-pc-windows-gnu
+
+      - name: Get version
+        id: get_version
+        shell: pwsh
+        run: |
+          $version = "${{ github.event.inputs.version }}"
+          echo "VERSION=$version" >> $env:GITHUB_OUTPUT
+          Write-Host "Version: $version"
+
+      - name: Rename asset
+        shell: pwsh
+        run: |
+          $version = "${{ steps.get_version.outputs.VERSION }}"
+          Move-Item target/x86_64-pc-windows-gnu/release/dashboard.exe target/x86_64-pc-windows-gnu/release/dashboard.v$version.exe
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: target/x86_64-pc-windows-gnu/release/dashboard.v${{ steps.get_version.outputs.VERSION }}.exe
+          generate_release_notes: true
