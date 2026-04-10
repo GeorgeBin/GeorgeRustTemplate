@@ -1,8 +1,8 @@
 [workspace]
 members = [
+    "baselib",
     "corelib",
     "demo",
-    "executable",
     "shared",
     "dashboard"
 ]
@@ -17,9 +17,10 @@ slint = "=1.15.1"
 slint-build = "=1.15.1"
 uniffi = "0.30.0"
 
+# 优化打包体积
 [profile.release]
-opt-level = "z"
-lto = true
-codegen-units = 1
-strip = true
-panic = "abort"
+opt-level = "z"        # 体积优先优化（"s" 次之，"z" 更小）
+lto = true             # 启用链接时优化 (Link Time Optimization)
+codegen-units = 1      # 降低并行代码生成数，提升优化效果
+panic = "abort"        # 避免引入 unwinding 代码
+strip = true           # 编译完成后去掉符号表（等同于手动 strip）
