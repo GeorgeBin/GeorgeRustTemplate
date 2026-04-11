@@ -14,12 +14,13 @@ export component AppWindow inherits Window {
     title: "Desktop Demo Shell";
     preferred-width: 800px;
     preferred-height: 600px;
-    no-frame: !root.is_macos;
+    no-frame: !root.is_macos && !root.use_native_window_chrome;
     background: Theme.background;
     default-font-family: Theme.default_font_family;
 
     in property <int> selected_tab: 0;
     in property <bool> is_macos: false;
+    in property <bool> use_native_window_chrome: false;
     in property <bool> show_window_controls: false;
     in-out property <bool> sidebar_collapsed: false;
     private property <bool> auto_sidebar_collapsed: false;
@@ -73,13 +74,13 @@ export component AppWindow inherits Window {
 
     Rectangle {
         background: Theme.background;
-        border-radius: 8px;
-        clip: true;
-        border-width: 1px;
+        border-radius: root.use_native_window_chrome ? 0px : 8px;
+        clip: !root.use_native_window_chrome;
+        border-width: root.use_native_window_chrome ? 0px : 1px;
         border-color: Theme.main_color;
 
         VerticalLayout {
-            TitleBar {
+            if (root.is_macos || !root.use_native_window_chrome): TitleBar {
                 title: "Desktop Demo Shell";
                 is_macos: root.is_macos;
                 show_window_controls: root.show_window_controls;
@@ -115,8 +116,9 @@ export component AppWindow inherits Window {
 
                 Rectangle {
                     background: Theme.content_bg;
-                    border-top-left-radius: 8px;
-                    clip: true;
+                    border-top-left-radius: root.use_native_window_chrome ? 0px : 8px;
+                    border-top-right-radius: root.use_native_window_chrome ? 0px : 8px;
+                    clip: !root.use_native_window_chrome;
 
                     VerticalLayout {
                         padding: 16px;

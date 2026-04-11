@@ -82,8 +82,9 @@ fn startup_language(
 
 fn build_app_window() -> AppWindow {
     let app = AppWindow::new().expect("Failed to create app");
+    app.set_use_native_window_chrome(cfg!(target_os = "linux"));
     app.set_is_macos(cfg!(target_os = "macos"));
-    app.set_show_window_controls(!cfg!(target_os = "macos"));
+    app.set_show_window_controls(cfg!(target_os = "windows"));
     app.global::<Theme>()
         .set_default_font_family("Source Han Sans SC".into());
     app::theme::refresh_theme_options(&app);
