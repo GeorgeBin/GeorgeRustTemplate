@@ -2,6 +2,7 @@ use super::cleanup::cleanup_old_logs;
 use super::config::{FileLogConfig, LogConfig, LogLevel, RuntimeLogConfig};
 use super::error::LogInitError;
 use super::file::build_file_appender;
+use std::path::PathBuf;
 use std::io::{Result as IoResult, Write};
 use std::sync::atomic::{AtomicBool, AtomicU8, Ordering};
 use std::sync::{Arc, Mutex, OnceLock};
@@ -108,7 +109,7 @@ impl<S: Subscriber> Filter<S> for RuntimeFilter {
 
 pub struct LoggingHandle {
     state: RuntimeState,
-    fixed_file_config: FileLogConfig,
+    file_config: Mutex<FileLogConfig>,
     file_writer: Arc<Mutex<NonBlocking>>,
     file_guard: Arc<Mutex<WorkerGuard>>,
 }
@@ -142,8 +143,45 @@ impl LoggingHandle {
         self.state.current_runtime_config()
     }
 
+    pub fn update_file_directory(&self, directory: PathBuf) -> Result<(), LogInitError> {
+        let mut next_config = self
+            .file_config
+            .lock()
+            .expect("logging file config mutex poisoned")
+            .clone();
+        next_config.directory = directory;
+
+        if self.state.file_enabled.load(Ordering::Relaxed) {
+            let appender = build_file_appender(&next_config)?;
+            let (non_blocking, guard) = tracing_appender::non_blocking(appender);
+
+            *self
+                .file_writer
+                .lock()
+                .expect("logging writer mutex poisoned") = non_blocking;
+            *self
+                .file_guard
+                .lock()
+                .expect("logging guard mutex poisoned") = guard;
+        }
+
+        *self
+            .file_config
+            .lock()
+            .expect("logging file config mutex poisoned") = next_config;
+
+        Ok(())
+    }
+
     fn enable_file_output(&self) -> Result<(), LogInitError> {
-        let appender = build_file_appender(&self.fixed_file_config)?;
+        let appender = {
+            let config = self
+                .file_config
+                .lock()
+                .expect("logging file config mutex poisoned")
+                .clone();
+            build_file_appender(&config)?
+        };
         let (non_blocking, guard) = tracing_appender::non_blocking(appender);
 
         *self
@@ -218,7 +256,7 @@ pub fn init_logging(config: LogConfig) -> Result<&'static LoggingHandle, LogInit
 
     let handle = LoggingHandle {
         state: runtime,
-        fixed_file_config: config.file.clone(),
+        file_config: Mutex::new(config.file.clone()),
         file_writer: swap_writer.inner,
         file_guard: Arc::new(Mutex::new(initial_guard)),
     };
@@ -334,11 +372,11 @@ mod tests {
 
         LoggingHandle {
             state,
-            fixed_file_config: FileLogConfig {
+            file_config: Mutex::new(FileLogConfig {
                 enabled: false,
                 directory: std::env::temp_dir(),
                 file_prefix: "test".to_string(),
-            },
+            }),
             file_writer: Arc::new(Mutex::new(writer)),
             file_guard: Arc::new(Mutex::new(guard)),
         }
@@ -402,5 +440,21 @@ mod tests {
         handle.apply_runtime_config(updated).unwrap();
 
         assert_eq!(handle.current_runtime_config(), updated);
+    }
+
+    #[test]
+    fn update_file_directory_replaces_stored_path() {
+        let handle = test_handle();
+        let next = std::env::temp_dir().join("baselib-logging-next");
+
+        handle.update_file_directory(next.clone()).unwrap();
+
+        let stored = handle
+            .file_config
+            .lock()
+            .expect("logging file config mutex poisoned")
+            .directory
+            .clone();
+        assert_eq!(stored, next);
     }
 }

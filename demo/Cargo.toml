@@ -19,12 +19,11 @@ update-check = []
 expiry-check = []
 
 [dependencies]
+baselib = { path = "../baselib" }
 corelib = { path = "../corelib" }
 slint = { version = "=1.15.1", default-features = false, features = ["std", "backend-winit", "renderer-femtovg", "renderer-software", "accessibility", "compat-1-2", "unstable-winit-030"] }
 tokio = { version = "1.38", features = ["rt-multi-thread", "macros", "sync", "time", "process", "io-util"] }
 tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt", "registry"] }
-tracing-appender = "0.2"
 serde = { version = "1.0", features = ["derive"] }
 toml = "0.9.10"
 rfd = "0.14"

@@ -2,7 +2,12 @@
 
 #[cfg(target_os = "macos")]
 use slint::winit_030::winit::platform::macos::WindowAttributesExtMacOS;
+use baselib::logging::{
+    CleanupConfig, ConsoleLogConfig, FileLogConfig, LogConfig, LogLevel, cleanup_old_logs,
+    init_logging,
+};
 use slint::{ComponentHandle, Model};
+use std::path::PathBuf;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 use tracing::{debug, info};
@@ -61,12 +66,48 @@ async fn initialize_app_state() -> Arc<Mutex<AppState>> {
     #[cfg(debug_assertions)]
     i18n::verify_translations();
 
-    let logging_system = utils::logging::init_logging(&settings.logs_location, settings.log_level);
-    utils::logging::cleanup_expired_logs(&settings.logs_location, settings.log_days);
+    let logging_config = build_logging_config(&settings);
+    let logging_system = init_logging(logging_config.clone()).expect("Failed to initialize logging");
+    cleanup_old_logs(
+        &logging_config.file,
+        &CleanupConfig {
+            enabled: true,
+            max_retention_days: settings.log_days as u16,
+        },
+    )
+    .expect("Failed to clean up expired logs");
 
     info!("Starting {} (ID: {})...", APP_NAME, APP_ID);
 
     Arc::new(Mutex::new(AppState::new(config_manager, logging_system)))
+}
+
+fn build_logging_config(settings: &config::UserSettings) -> LogConfig {
+    LogConfig {
+        enabled: true,
+        level: log_level_from_u8(settings.log_level),
+        console: ConsoleLogConfig { enabled: true },
+        file: FileLogConfig {
+            enabled: true,
+            directory: PathBuf::from(&settings.logs_location),
+            file_prefix: "demo".to_string(),
+        },
+        cleanup: CleanupConfig {
+            enabled: true,
+            max_retention_days: settings.log_days as u16,
+        },
+    }
+}
+
+fn log_level_from_u8(level: u8) -> LogLevel {
+    match level {
+        1 => LogLevel::Error,
+        2 => LogLevel::Warn,
+        3 => LogLevel::Info,
+        4 => LogLevel::Debug,
+        5 => LogLevel::Trace,
+        _ => LogLevel::Info,
+    }
 }
 
 fn startup_language(

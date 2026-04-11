@@ -1,5 +1,7 @@
 use crate::{AppI18n, AppState, AppWindow, app::theme, config, i18n};
+use baselib::logging::{LogLevel, RuntimeLogConfig};
 use slint::ComponentHandle;
+use std::path::PathBuf;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 use tracing::error;
@@ -85,11 +87,24 @@ fn collect_user_settings(
 
 fn apply_runtime_settings(app: &AppWindow, state: &mut AppState, settings: &config::UserSettings) {
     let current_logs_location = state.config_manager.get_settings().logs_location.clone();
-    if let Some(logging_system) = state.logging_system.as_mut() {
-        if current_logs_location != settings.logs_location {
-            logging_system.update_path(&settings.logs_location);
+    if let Some(logging_system) = state.logging_system {
+        if current_logs_location != settings.logs_location
+            && let Err(err) = logging_system.update_file_directory(PathBuf::from(&settings.logs_location))
+        {
+            error!("Failed to update log directory '{}': {}", settings.logs_location, err);
         }
-        logging_system.update_level(settings.log_level);
+
+        let current = logging_system.current_runtime_config();
+        let updated = RuntimeLogConfig {
+            enabled: current.enabled,
+            level: log_level_from_u8(settings.log_level),
+            console_enabled: current.console_enabled,
+            file_enabled: current.file_enabled,
+        };
+
+        if let Err(err) = logging_system.apply_runtime_config(updated) {
+            error!("Failed to update log level '{}': {}", settings.log_level, err);
+        }
     }
 
     let system_language = state
@@ -108,6 +123,17 @@ fn apply_runtime_settings(app: &AppWindow, state: &mut AppState, settings: &conf
     app.global::<AppI18n>()
         .set_version(app.global::<AppI18n>().get_version() + 1);
     theme::refresh_theme_options(app);
+}
+
+fn log_level_from_u8(level: u8) -> LogLevel {
+    match level {
+        1 => LogLevel::Error,
+        2 => LogLevel::Warn,
+        3 => LogLevel::Info,
+        4 => LogLevel::Debug,
+        5 => LogLevel::Trace,
+        _ => LogLevel::Info,
+    }
 }
 
 fn show_settings_message(app_handle: &slint::Weak<AppWindow>, message: String) {

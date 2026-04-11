@@ -4,6 +4,7 @@ pub mod error;
 pub mod file;
 pub mod init;
 
+pub use cleanup::cleanup_old_logs;
 pub use config::{
     CleanupConfig, ConsoleLogConfig, FileLogConfig, LogConfig, LogLevel, RuntimeLogConfig,
 };
