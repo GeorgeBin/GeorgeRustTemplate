@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Desktop Demo Shell
+Comment=A lightweight native desktop shell built with Rust and Slint.
+Exec=demo
+Icon=demo
+Terminal=false
+Categories=Development;Utility;
+StartupNotify=true

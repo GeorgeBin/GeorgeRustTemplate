@@ -70,6 +70,20 @@ cargo bundle -p demo --release --target x86_64-apple-darwin
 
 当前 macOS `.app` 的 bundle 元信息在 `Cargo.toml` 的 `[package.metadata.bundle]` 中维护。
 
+Linux RPM 打包：
+
+```powershell
+brew install zig
+cargo install cargo-generate-rpm cargo-zigbuild just
+just build-rpm-linux
+```
+
+默认 RPM 产物输出到 `target/generate-rpm/`。
+
+- 在 Linux 原生环境中，可继续使用 `cargo build -p demo --release` 和 `cargo generate-rpm -p demo`。
+- 在 macOS 上交叉打 Linux RPM 时，`just build-rpm-linux` 会先生成 `target/x86_64-unknown-linux-gnu/release/demo`，再通过 `demo/packaging/linux/generate-rpm-cross.toml` 打包。
+- 当前 macOS 交叉打包默认关闭自动依赖扫描，因为 RPM 的自动依赖解析依赖 Linux 工具链。
+
 ## 代码入口
 
 - UI 入口：`assets/slint/app.slint`
