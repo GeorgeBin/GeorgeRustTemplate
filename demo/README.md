@@ -78,10 +78,11 @@ cargo install cargo-generate-rpm cargo-zigbuild just
 just build-rpm-linux
 ```
 
-默认 RPM 产物输出到 `target/generate-rpm/`。
+默认 RPM 产物输出到 `target/generate-rpm/`，项目脚本会额外复制到 `build/x86_64-unknown-linux-gnu/release/rpm/`。
 
 - 在 Linux 原生环境中，可继续使用 `cargo build -p demo --release` 和 `cargo generate-rpm -p demo`。
 - 在 macOS 上交叉打 Linux RPM 时，`just build-rpm-linux` 会先生成 `target/x86_64-unknown-linux-gnu/release/demo`，再通过 `demo/packaging/linux/generate-rpm-cross.toml` 打包。
+- `just build-rpm` 与 `just build-rpm-linux` 都会在复制前清理 `build/x86_64-unknown-linux-gnu/release/rpm/` 中旧的 `demo-*.rpm`，避免残留旧版本。
 - 当前 macOS 交叉打包默认关闭自动依赖扫描，因为 RPM 的自动依赖解析依赖 Linux 工具链。
 
 ## 代码入口

@@ -29,11 +29,19 @@ build-demo:
 build-rpm:
   cargo build -p demo --release
   cargo generate-rpm -p demo
+  mkdir -p build/x86_64-unknown-linux-gnu/release/rpm
+  rm -f build/x86_64-unknown-linux-gnu/release/rpm/demo-*.rpm
+  cp target/generate-rpm/demo-*.rpm build/x86_64-unknown-linux-gnu/release/rpm/
+  ls -1 build/x86_64-unknown-linux-gnu/release/rpm/demo-*.rpm
 
 build-rpm-linux:
   rustup target add x86_64-unknown-linux-gnu
   RUST_FONTCONFIG_DLOPEN=1 cargo zigbuild -p demo --release --target x86_64-unknown-linux-gnu
   cargo generate-rpm -p demo --target x86_64-unknown-linux-gnu --auto-req disabled --metadata-overwrite demo/packaging/linux/generate-rpm-cross.toml
+  mkdir -p build/x86_64-unknown-linux-gnu/release/rpm
+  rm -f build/x86_64-unknown-linux-gnu/release/rpm/demo-*.rpm
+  cp target/generate-rpm/demo-*.rpm build/x86_64-unknown-linux-gnu/release/rpm/
+  ls -1 build/x86_64-unknown-linux-gnu/release/rpm/demo-*.rpm
 
 build-shared-android:
   ./unleash/build_shared_android_so.sh
