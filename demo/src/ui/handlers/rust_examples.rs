@@ -1,6 +1,7 @@
 use crate::{AppState, AppWindow, i18n};
 use std::sync::Arc;
 use tokio::sync::Mutex;
+use tracing::info;
 
 pub fn setup(
     app: &AppWindow,
@@ -40,5 +41,9 @@ pub fn setup(
             );
         }
         next
+    });
+
+    app.on_example_write_log(move || {
+        info!("Button clicked: writing log from rust_examples");
     });
 }

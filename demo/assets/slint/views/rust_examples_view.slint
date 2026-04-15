@@ -8,6 +8,7 @@ export component RustExamplesView inherits VerticalLayout {
     callback increment-counter();
     callback report-counter(int);
     callback add-ten(int) -> int;
+    callback write-log();
 
     spacing: 14px;
     padding-left: 4px;
@@ -99,6 +100,13 @@ export component RustExamplesView inherits VerticalLayout {
                     text: AppI18n.t("rust_examples.interaction.with_return", [AppI18n.version]);
                     clicked => {
                         root.example_counter = root.add-ten(root.example_counter);
+                    }
+                }
+
+                CustomButton {
+                    text: AppI18n.t("rust_examples.interaction.write_log", [AppI18n.version]);
+                    clicked => {
+                        root.write-log();
                     }
                 }
             }

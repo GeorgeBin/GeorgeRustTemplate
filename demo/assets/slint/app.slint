@@ -51,6 +51,7 @@ export component AppWindow inherits Window {
     callback example_increment();
     callback example_report_counter(int);
     callback example_add_ten(int) -> int;
+    callback example_write_log();
     callback check_update();
     callback download_update();
     callback close_expire_dialog();
@@ -137,6 +138,9 @@ export component AppWindow inherits Window {
                             }
                             add-ten(value) => {
                                 return root.example_add_ten(value);
+                            }
+                            write-log => {
+                                root.example_write_log();
                             }
                         }
 
