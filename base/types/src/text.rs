@@ -42,6 +42,18 @@ impl TryFrom<&str> for NonEmptyString {
     }
 }
 
+impl AsRef<str> for NonEmptyString {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl From<NonEmptyString> for String {
+    fn from(value: NonEmptyString) -> Self {
+        value.into_string()
+    }
+}
+
 impl fmt::Display for NonEmptyString {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_str(self.as_str())
@@ -100,5 +112,19 @@ mod tests {
         let value = NonEmptyString::try_from("  demo  ").expect("text should be valid");
 
         assert_eq!(value.as_str(), "  demo  ");
+    }
+
+    #[test]
+    fn as_ref_returns_original_text() {
+        let value = NonEmptyString::try_from("  demo  ").expect("text should be valid");
+
+        assert_eq!(value.as_ref(), "  demo  ");
+    }
+
+    #[test]
+    fn from_non_empty_string_for_string_returns_original_text() {
+        let value = NonEmptyString::try_from("  demo  ").expect("text should be valid");
+
+        assert_eq!(String::from(value), "  demo  ");
     }
 }

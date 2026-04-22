@@ -7,5 +7,5 @@ mod id;
 mod text;
 
 pub use error::{EmptyStringError, InvalidIdError};
-pub use id::{CorrelationId, HandleId, RequestId};
+pub use id::{HandleId, InternalCorrelationId, RequestId};
 pub use text::NonEmptyString;

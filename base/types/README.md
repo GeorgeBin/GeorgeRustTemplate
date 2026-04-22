@@ -29,16 +29,23 @@
 
 - `HandleId`
 - `RequestId`
-- `CorrelationId`
+- `InternalCorrelationId`
 - `NonEmptyString`
 - `InvalidIdError`
 - `EmptyStringError`
 
 其中：
 
-- `HandleId`、`RequestId`、`CorrelationId` 使用 `NonZeroU64` 表达非零 ID
+- `HandleId`、`RequestId`、`InternalCorrelationId` 使用 `NonZeroU64` 表达非零 ID
 - `NonEmptyString` 使用 `trim()` 判空，但保留原始字符串内容，不做裁剪或归一化
 - 错误类型保持轻量，不引入第三方依赖
+- `InternalCorrelationId` 明确只表示 SDK/进程内请求链路关联号，不占用未来跨进程字符串型 `CorrelationId` 的语义名
+
+## 命名边界
+
+当前 crate 不承担 HTTP header、gRPC、WebSocket、日志系统等跨进程 tracing 标识的统一抽象。
+
+如果后续需要真正跨进程、跨协议传播的关联字段，应新增字符串型 `CorrelationId`，而不是继续扩展当前的 `InternalCorrelationId`。
 
 ## 设计约束
 
