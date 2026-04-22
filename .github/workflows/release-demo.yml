@@ -3,12 +3,9 @@ name: Release Demo
 permissions:
   contents: write
 
+# Temporarily disabled by removing repository-triggered events.
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: "Release version, for example 0.1.0"
-        required: true
+  workflow_call:
 
 env:
   CARGO_TERM_COLOR: always
