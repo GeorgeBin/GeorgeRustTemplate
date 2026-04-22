@@ -5,5 +5,8 @@ edition.workspace = true
 license.workspace = true
 rust-version.workspace = true
 
+[dependencies]
+george-base-types = { path = "../../base/types" }
+
 [lints]
 workspace = true

@@ -4921,6 +4921,9 @@ dependencies = [
 [[package]]
 name = "template-model"
 version = "0.1.0"
+dependencies = [
+ "george-base-types",
+]
 
 [[package]]
 name = "template-runtime"
