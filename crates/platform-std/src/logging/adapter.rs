@@ -13,6 +13,13 @@ use tracing::{
     subscriber::Interest,
 };
 
+// Dynamic tracing targets require runtime-created metadata/callsites instead of
+// the usual macro-generated static callsites. We keep one leaked callsite per
+// `(level, target, module_path, file, line)` combination for the process
+// lifetime so events preserve their real tracing target. This intentionally
+// trades bounded process memory growth for correct target-based filtering. In
+// normal application code these values are usually `'static` and finite, so the
+// cache should remain small and stable.
 static CALLSITE_CACHE: OnceLock<Mutex<HashMap<CallsiteKey, &'static DynamicEventCallsite>>> =
     OnceLock::new();
 static FIELD_NAMES: &[&str] = &["message", "module_path", "file", "line", "fields"];
