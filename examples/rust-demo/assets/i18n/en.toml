@@ -16,6 +16,7 @@ result_idle = "Enter a server address and start a query."
 empty_host = "Please enter an NTP server address."
 success = "Query succeeded: {0}"
 failure = "Query failed: {0}"
+unavailable = "The NTP query in this desktop demo is temporarily disabled until the runtime/transport implementation is wired back in."
 
 [rust_examples]
 title = "Rust Interaction Examples"

@@ -4914,8 +4914,8 @@ dependencies = [
 name = "template-core"
 version = "0.1.0"
 dependencies = [
- "thiserror 2.0.17",
- "tracing",
+ "george-base-types",
+ "template-model",
 ]
 
 [[package]]

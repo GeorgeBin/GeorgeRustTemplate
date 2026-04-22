@@ -9,5 +9,5 @@ rust-version.workspace = true
 workspace = true
 
 [dependencies]
-thiserror = { workspace = true }
-tracing = { workspace = true }
+george-base-types = { path = "../../base/types" }
+template-model = { path = "../model" }

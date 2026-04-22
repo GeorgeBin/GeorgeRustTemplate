@@ -16,6 +16,7 @@ result_idle = "输入服务器地址后开始查询。"
 empty_host = "请输入 NTP 服务器地址。"
 success = "查询成功：{0}"
 failure = "查询失败：{0}"
+unavailable = "当前桌面示例中的 NTP 查询已暂时停用，待 runtime/transport 实现接回后恢复。"
 
 [rust_examples]
 title = "Rust 示例"
