@@ -1,7 +1,8 @@
 use super::cleanup::cleanup_old_logs;
-use super::config::{FileLogConfig, LogConfig, LogLevel, RuntimeLogConfig};
-use super::error::LogInitError;
+use super::config::{FileLogConfig, RuntimeLogConfig, StdLogConfig};
+use super::error::StdLogInstallError;
 use super::file::build_file_appender;
+use george_base_log::LogLevel;
 use std::io::{Result as IoResult, Write};
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, AtomicU8, Ordering};
@@ -12,7 +13,7 @@ use tracing_subscriber::fmt;
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::layer::{Filter, Layer};
 
-static LOGGING_RUNTIME: OnceLock<LoggingHandle> = OnceLock::new();
+static LOGGING_RUNTIME: OnceLock<StdLoggingHandle> = OnceLock::new();
 
 #[derive(Clone)]
 struct SwapWriter {
@@ -107,15 +108,15 @@ impl<S: Subscriber> Filter<S> for RuntimeFilter {
     }
 }
 
-pub struct LoggingHandle {
+pub struct StdLoggingHandle {
     state: RuntimeState,
     file_config: Mutex<FileLogConfig>,
     file_writer: Arc<Mutex<NonBlocking>>,
     file_guard: Arc<Mutex<WorkerGuard>>,
 }
 
-impl LoggingHandle {
-    pub fn apply_runtime_config(&self, config: RuntimeLogConfig) -> Result<(), LogInitError> {
+impl StdLoggingHandle {
+    pub fn apply_runtime_config(&self, config: RuntimeLogConfig) -> Result<(), StdLogInstallError> {
         validate_runtime_config(config)?;
 
         let current = self.current_runtime_config();
@@ -143,7 +144,7 @@ impl LoggingHandle {
         self.state.current_runtime_config()
     }
 
-    pub fn update_file_directory(&self, directory: PathBuf) -> Result<(), LogInitError> {
+    pub fn update_file_directory(&self, directory: PathBuf) -> Result<(), StdLogInstallError> {
         let mut next_config = self
             .file_config
             .lock()
@@ -173,7 +174,7 @@ impl LoggingHandle {
         Ok(())
     }
 
-    fn enable_file_output(&self) -> Result<(), LogInitError> {
+    fn enable_file_output(&self) -> Result<(), StdLogInstallError> {
         let appender = {
             let config = self
                 .file_config
@@ -209,9 +210,11 @@ impl LoggingHandle {
     }
 }
 
-pub fn init_logging(config: LogConfig) -> Result<&'static LoggingHandle, LogInitError> {
+pub fn install_global_tracing(
+    config: StdLogConfig,
+) -> Result<&'static StdLoggingHandle, StdLogInstallError> {
     if LOGGING_RUNTIME.get().is_some() {
-        return Err(LogInitError::AlreadyInitialized);
+        return Err(StdLogInstallError::AlreadyInitialized);
     }
 
     validate_init_config(&config)?;
@@ -252,9 +255,9 @@ pub fn init_logging(config: LogConfig) -> Result<&'static LoggingHandle, LogInit
         .with(file_layer);
 
     tracing::subscriber::set_global_default(subscriber)
-        .map_err(|err| LogInitError::SetGlobalSubscriber(err.to_string()))?;
+        .map_err(|err| StdLogInstallError::SetGlobalSubscriber(err.to_string()))?;
 
-    let handle = LoggingHandle {
+    let handle = StdLoggingHandle {
         state: runtime,
         file_config: Mutex::new(config.file.clone()),
         file_writer: swap_writer.inner,
@@ -263,28 +266,28 @@ pub fn init_logging(config: LogConfig) -> Result<&'static LoggingHandle, LogInit
 
     LOGGING_RUNTIME
         .set(handle)
-        .map_err(|_| LogInitError::AlreadyInitialized)?;
+        .map_err(|_| StdLogInstallError::AlreadyInitialized)?;
 
     Ok(LOGGING_RUNTIME
         .get()
         .expect("logging handle must be available after initialization"))
 }
 
-pub fn logging() -> Option<&'static LoggingHandle> {
+pub fn global_logging() -> Option<&'static StdLoggingHandle> {
     LOGGING_RUNTIME.get()
 }
 
-fn validate_init_config(config: &LogConfig) -> Result<(), LogInitError> {
+fn validate_init_config(config: &StdLogConfig) -> Result<(), StdLogInstallError> {
     validate_runtime_config(RuntimeLogConfig::from(config))?;
 
     if config.cleanup.enabled && config.cleanup.max_retention_days < 1 {
-        return Err(LogInitError::InvalidConfig(
+        return Err(StdLogInstallError::InvalidConfig(
             "max_retention_days must be >= 1 when cleanup is enabled".to_string(),
         ));
     }
 
     if config.file.file_prefix.trim().is_empty() {
-        return Err(LogInitError::InvalidConfig(
+        return Err(StdLogInstallError::InvalidConfig(
             "file_prefix must not be empty".to_string(),
         ));
     }
@@ -292,9 +295,9 @@ fn validate_init_config(config: &LogConfig) -> Result<(), LogInitError> {
     Ok(())
 }
 
-fn validate_runtime_config(config: RuntimeLogConfig) -> Result<(), LogInitError> {
+fn validate_runtime_config(config: RuntimeLogConfig) -> Result<(), StdLogInstallError> {
     if config.enabled && !config.console_enabled && !config.file_enabled {
-        return Err(LogInitError::InvalidConfig(
+        return Err(StdLogInstallError::InvalidConfig(
             "enabled=true requires console or file logging to be enabled".to_string(),
         ));
     }
@@ -338,10 +341,9 @@ fn u8_to_log_level(level: u8) -> LogLevel {
 mod tests {
     use super::*;
     use crate::logging::{CleanupConfig, ConsoleLogConfig, FileLogConfig};
-    use std::path::PathBuf;
 
-    fn config() -> LogConfig {
-        LogConfig {
+    fn config() -> StdLogConfig {
+        StdLogConfig {
             enabled: true,
             level: LogLevel::Info,
             console: ConsoleLogConfig { enabled: true },
@@ -366,11 +368,11 @@ mod tests {
         }
     }
 
-    fn test_handle() -> LoggingHandle {
+    fn test_handle() -> StdLoggingHandle {
         let state = RuntimeState::from_runtime_config(runtime_config());
         let (writer, guard) = tracing_appender::non_blocking(std::io::sink());
 
-        LoggingHandle {
+        StdLoggingHandle {
             state,
             file_config: Mutex::new(FileLogConfig {
                 enabled: false,
@@ -389,7 +391,7 @@ mod tests {
 
         let result = validate_init_config(&cfg);
 
-        assert!(matches!(result, Err(LogInitError::InvalidConfig(_))));
+        assert!(matches!(result, Err(StdLogInstallError::InvalidConfig(_))));
     }
 
     #[test]
@@ -400,7 +402,7 @@ mod tests {
 
         let result = validate_init_config(&cfg);
 
-        assert!(matches!(result, Err(LogInitError::InvalidConfig(_))));
+        assert!(matches!(result, Err(StdLogInstallError::InvalidConfig(_))));
     }
 
     #[test]
@@ -410,7 +412,7 @@ mod tests {
 
         let result = validate_init_config(&cfg);
 
-        assert!(matches!(result, Err(LogInitError::InvalidConfig(_))));
+        assert!(matches!(result, Err(StdLogInstallError::InvalidConfig(_))));
     }
 
     #[test]
@@ -424,7 +426,7 @@ mod tests {
 
         let result = validate_runtime_config(invalid);
 
-        assert!(matches!(result, Err(LogInitError::InvalidConfig(_))));
+        assert!(matches!(result, Err(StdLogInstallError::InvalidConfig(_))));
     }
 
     #[test]
@@ -447,7 +449,7 @@ mod tests {
     #[test]
     fn update_file_directory_replaces_stored_path() {
         let handle = test_handle();
-        let next = std::env::temp_dir().join("baselib-logging-next");
+        let next = std::env::temp_dir().join("platform-std-logging-next");
 
         handle
             .update_file_directory(next.clone())

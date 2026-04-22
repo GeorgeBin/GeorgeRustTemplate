@@ -1,21 +1,13 @@
+use george_base_log::LogLevel;
 use std::path::PathBuf;
 
 #[derive(Debug, Clone)]
-pub struct LogConfig {
+pub struct StdLogConfig {
     pub enabled: bool,
     pub level: LogLevel,
     pub console: ConsoleLogConfig,
     pub file: FileLogConfig,
     pub cleanup: CleanupConfig,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum LogLevel {
-    Error,
-    Warn,
-    Info,
-    Debug,
-    Trace,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -44,8 +36,8 @@ pub struct RuntimeLogConfig {
     pub file_enabled: bool,
 }
 
-impl From<&LogConfig> for RuntimeLogConfig {
-    fn from(config: &LogConfig) -> Self {
+impl From<&StdLogConfig> for RuntimeLogConfig {
+    fn from(config: &StdLogConfig) -> Self {
         Self {
             enabled: config.enabled,
             level: config.level,

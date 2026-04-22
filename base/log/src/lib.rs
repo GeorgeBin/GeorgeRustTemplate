@@ -1,6 +1,17 @@
-pub mod logging;
+#![cfg_attr(not(feature = "std"), no_std)]
 
-pub use logging::{
-    CleanupConfig, ConsoleLogConfig, FileLogConfig, LogConfig, LogInitError, LogLevel,
-    LoggingHandle, RuntimeLogConfig, cleanup_old_logs, init_logging, logging,
-};
+extern crate alloc;
+
+mod ext;
+mod field;
+mod level;
+mod logger;
+mod noop;
+mod record;
+
+pub use ext::LoggerExt;
+pub use field::LogField;
+pub use level::LogLevel;
+pub use logger::{Logger, SharedLogger};
+pub use noop::NoopLogger;
+pub use record::LogRecord;

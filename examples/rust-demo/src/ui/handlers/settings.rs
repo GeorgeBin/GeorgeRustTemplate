@@ -1,5 +1,6 @@
 use crate::{AppI18n, AppState, AppWindow, app::theme, config, i18n};
-use george_base_log::{LogLevel, RuntimeLogConfig};
+use george_base_log::LogLevel;
+use george_platform_std::RuntimeLogConfig;
 use slint::ComponentHandle;
 use std::path::PathBuf;
 use std::sync::Arc;

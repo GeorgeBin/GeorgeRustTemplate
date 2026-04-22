@@ -1,5 +1,5 @@
 use super::config::FileLogConfig;
-use super::error::LogInitError;
+use super::error::StdLogInstallError;
 use chrono::{Local, NaiveDate};
 use std::fs::{File, OpenOptions};
 use std::io::{self, Write};
@@ -20,27 +20,27 @@ struct AppenderState {
     file: File,
 }
 
-pub fn ensure_log_directory(path: &Path) -> Result<(), LogInitError> {
-    std::fs::create_dir_all(path).map_err(LogInitError::CreateDirectory)
+pub fn ensure_log_directory(path: &Path) -> Result<(), StdLogInstallError> {
+    std::fs::create_dir_all(path).map_err(StdLogInstallError::CreateDirectory)
 }
 
 pub fn build_file_appender(
     config: &FileLogConfig,
-) -> Result<LocalDateRollingFileAppender, LogInitError> {
+) -> Result<LocalDateRollingFileAppender, StdLogInstallError> {
     LocalDateRollingFileAppender::new(config)
 }
 
 impl LocalDateRollingFileAppender {
-    pub fn new(config: &FileLogConfig) -> Result<Self, LogInitError> {
+    pub fn new(config: &FileLogConfig) -> Result<Self, StdLogInstallError> {
         Self::with_current_date(config, Arc::new(|| Local::now().date_naive()))
     }
 
     fn with_current_date(
         config: &FileLogConfig,
         current_date: CurrentDateFn,
-    ) -> Result<Self, LogInitError> {
+    ) -> Result<Self, StdLogInstallError> {
         if config.file_prefix.trim().is_empty() {
-            return Err(LogInitError::InvalidConfig(
+            return Err(StdLogInstallError::InvalidConfig(
                 "file_prefix must not be empty when file logging is enabled".to_string(),
             ));
         }
@@ -49,7 +49,7 @@ impl LocalDateRollingFileAppender {
 
         let active_date = current_date();
         let file = open_log_file(&config.directory, &config.file_prefix, active_date)
-            .map_err(LogInitError::BuildFileAppender)?;
+            .map_err(StdLogInstallError::BuildFileAppender)?;
 
         Ok(Self {
             state: AppenderState {
@@ -114,7 +114,7 @@ mod tests {
 
     fn temp_dir(name: &str) -> PathBuf {
         let unique = format!(
-            "baselib-local-log-{name}-{}",
+            "platform-std-local-log-{name}-{}",
             std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
                 .expect("system time before unix epoch")

@@ -1143,6 +1143,7 @@ dependencies = [
  "embed-resource",
  "fontique",
  "george-base-log",
+ "george-platform-std",
  "image",
  "once_cell",
  "open",
@@ -1789,13 +1790,6 @@ version = "0.1.0"
 [[package]]
 name = "george-base-log"
 version = "0.1.0"
-dependencies = [
- "chrono",
- "thiserror 2.0.17",
- "tracing",
- "tracing-appender",
- "tracing-subscriber",
-]
 
 [[package]]
 name = "george-base-types"
@@ -1804,6 +1798,18 @@ version = "0.1.0"
 [[package]]
 name = "george-base-utils"
 version = "0.1.0"
+
+[[package]]
+name = "george-platform-std"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "george-base-log",
+ "thiserror 2.0.17",
+ "tracing",
+ "tracing-appender",
+ "tracing-subscriber",
+]
 
 [[package]]
 name = "gethostname"

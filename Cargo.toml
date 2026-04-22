@@ -6,6 +6,7 @@ members = [
     "base/utils",
     "crates/model",
     "crates/core",
+    "crates/platform-std",
     "crates/runtime",
     "crates/sdk",
     "examples/rust-demo",

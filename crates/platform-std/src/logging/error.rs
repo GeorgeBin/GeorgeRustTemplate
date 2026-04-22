@@ -1,7 +1,7 @@
 use thiserror::Error;
 
 #[derive(Debug, Error)]
-pub enum LogInitError {
+pub enum StdLogInstallError {
     #[error("logging has already been initialized")]
     AlreadyInitialized,
 

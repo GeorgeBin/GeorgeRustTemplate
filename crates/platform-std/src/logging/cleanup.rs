@@ -1,14 +1,17 @@
 use super::config::{CleanupConfig, FileLogConfig};
-use super::error::LogInitError;
+use super::error::StdLogInstallError;
 use chrono::{Local, TimeDelta};
 
-pub fn cleanup_old_logs(file: &FileLogConfig, cleanup: &CleanupConfig) -> Result<(), LogInitError> {
+pub fn cleanup_old_logs(
+    file: &FileLogConfig,
+    cleanup: &CleanupConfig,
+) -> Result<(), StdLogInstallError> {
     if !file.enabled || !cleanup.enabled {
         return Ok(());
     }
 
     if cleanup.max_retention_days < 1 {
-        return Err(LogInitError::InvalidConfig(
+        return Err(StdLogInstallError::InvalidConfig(
             "max_retention_days must be >= 1 when cleanup is enabled".to_string(),
         ));
     }
@@ -99,13 +102,13 @@ mod tests {
 
         let result = cleanup_old_logs(&file_config(std::env::temp_dir()), &cleanup);
 
-        assert!(matches!(result, Err(LogInitError::InvalidConfig(_))));
+        assert!(matches!(result, Err(StdLogInstallError::InvalidConfig(_))));
     }
 
     #[test]
     fn deletes_only_expired_matching_files() {
         let unique = format!(
-            "baselib-logging-cleanup-{}",
+            "platform-std-logging-cleanup-{}",
             std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
                 .expect("system time should be after unix epoch")

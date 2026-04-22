@@ -1,8 +1,9 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use george_base_log::{
-    CleanupConfig, ConsoleLogConfig, FileLogConfig, LogConfig, LogLevel, cleanup_old_logs,
-    init_logging,
+use george_base_log::LogLevel;
+use george_platform_std::{
+    CleanupConfig, ConsoleLogConfig, FileLogConfig, StdLogConfig, cleanup_old_logs,
+    install_global_tracing,
 };
 #[cfg(target_os = "macos")]
 use slint::winit_030::winit::platform::macos::WindowAttributesExtMacOS;
@@ -68,7 +69,7 @@ async fn initialize_app_state() -> Arc<Mutex<AppState>> {
 
     let logging_config = build_logging_config(&settings);
     let logging_system =
-        init_logging(logging_config.clone()).expect("Failed to initialize logging");
+        install_global_tracing(logging_config.clone()).expect("Failed to initialize logging");
     cleanup_old_logs(
         &logging_config.file,
         &CleanupConfig {
@@ -83,8 +84,8 @@ async fn initialize_app_state() -> Arc<Mutex<AppState>> {
     Arc::new(Mutex::new(AppState::new(config_manager, logging_system)))
 }
 
-fn build_logging_config(settings: &config::UserSettings) -> LogConfig {
-    LogConfig {
+fn build_logging_config(settings: &config::UserSettings) -> StdLogConfig {
+    StdLogConfig {
         enabled: true,
         level: log_level_from_u8(settings.log_level),
         console: ConsoleLogConfig { enabled: true },
