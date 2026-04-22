@@ -9,6 +9,7 @@ use crate::{ErrorContext, ErrorDescriptor, NativeError};
 #[cfg(feature = "std")]
 use alloc::boxed::Box;
 
+/// Represents one runtime error instance built from a stable descriptor.
 pub struct BaseError {
     pub desc: &'static ErrorDescriptor,
     pub detail: Option<String>,
@@ -19,6 +20,7 @@ pub struct BaseError {
 }
 
 impl BaseError {
+    /// Creates a new runtime error instance from a static descriptor.
     pub fn new(desc: &'static ErrorDescriptor) -> Self {
         Self {
             desc,
@@ -35,28 +37,24 @@ impl BaseError {
         self
     }
 
+    /// Attaches native error information from an underlying system.
     pub fn native<C, M>(mut self, source: &'static str, code: Option<C>, message: Option<M>) -> Self
     where
         C: Into<String>,
         M: Into<String>,
     {
-        self.native = Some(NativeError {
-            source,
-            code: code.map(Into::into),
-            message: message.map(Into::into),
-        });
+        self.native = Some(NativeError::new(source, code, message));
         self
     }
 
+    /// Attaches one structured context item to the error.
     pub fn context(mut self, key: &'static str, value: impl ToString) -> Self {
-        self.context.push(ErrorContext {
-            key,
-            value: value.to_string(),
-        });
+        self.context.push(ErrorContext::new(key, value));
         self
     }
 
     #[cfg(feature = "std")]
+    /// Attaches a Rust source error for error chain integration.
     pub fn source<E>(mut self, err: E) -> Self
     where
         E: std::error::Error + Send + Sync + 'static,
@@ -64,13 +62,37 @@ impl BaseError {
         self.source = Some(Box::new(err));
         self
     }
+
+    /// Returns the stable error code from the descriptor.
+    pub fn code(&self) -> crate::ErrorCode {
+        self.desc.code
+    }
+
+    /// Returns the stable descriptor name.
+    pub fn name(&self) -> &'static str {
+        self.desc.name
+    }
+
+    /// Returns the high-level error kind from the descriptor.
+    pub fn kind(&self) -> crate::ErrorKind {
+        self.desc.kind
+    }
+
+    /// Returns the descriptor's default message.
+    pub fn default_message(&self) -> &'static str {
+        self.desc.default_message
+    }
 }
 
 impl fmt::Debug for BaseError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let code = self.code().to_string();
         let mut debug = f.debug_struct("BaseError");
         debug
-            .field("desc", &self.desc)
+            .field("code", &code)
+            .field("name", &self.name())
+            .field("kind", &self.kind())
+            .field("default_message", &self.default_message())
             .field("detail", &self.detail)
             .field("native", &self.native)
             .field("context", &self.context);
@@ -87,11 +109,19 @@ impl fmt::Debug for BaseError {
 
 impl fmt::Display for BaseError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "[{}][{}] {}",
+            self.code(),
+            self.name(),
+            self.default_message()
+        )?;
+
         if let Some(detail) = &self.detail {
-            f.write_str(detail)
-        } else {
-            f.write_str(self.desc.default_message)
+            write!(f, " | {detail}")?;
         }
+
+        Ok(())
     }
 }
 

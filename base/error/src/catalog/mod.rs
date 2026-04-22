@@ -9,21 +9,22 @@ pub mod storage;
 
 use crate::ErrorDescriptor;
 
-pub const ALL_DESCRIPTORS: [&ErrorDescriptor; 16] = [
-    &common::COMMON_INVALID_INPUT,
+pub static ALL_DESCRIPTORS: &[&ErrorDescriptor] = &[
+    &common::COMMON_UNKNOWN,
     &common::COMMON_INTERNAL,
     &config::CONFIG_MISSING_VALUE,
     &config::CONFIG_INVALID_VALUE,
     &runtime::RUNTIME_INVALID_STATE,
     &runtime::RUNTIME_TASK_CANCELLED,
     &network::NET_DNS_LOOKUP_FAILED,
-    &network::NET_TCP_TIMEOUT,
+    &network::NET_TCP_CONNECT_TIMEOUT,
+    &network::NET_SOCKET_CONNECTION_REFUSED,
     &network::NET_HTTP_NOT_FOUND,
     &storage::STORAGE_IO_FAILED,
     &storage::STORAGE_NOT_FOUND,
-    &data::DATA_JSON_PARSE_FAILED,
+    &data::DATA_JSON_DECODE_FAILED,
     &data::DATA_PROTOCOL_DECODE_FAILED,
     &security::SEC_AUTH_PERMISSION_DENIED,
     &security::SEC_CERT_VERIFY_FAILED,
-    &platform::PLATFORM_CALLBACK_UNAVAILABLE,
+    &platform::PLATFORM_JNI_CALLBACK_THREAD_UNAVAILABLE,
 ];
