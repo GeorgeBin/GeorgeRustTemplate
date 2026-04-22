@@ -1,25 +1,45 @@
 [workspace]
 members = [
-    "baselib",
-    "corelib",
-    "shared",
-    "demo"
+    "base/error",
+    "base/log",
+    "base/types",
+    "base/utils",
+    "crates/model",
+    "crates/core",
+    "crates/runtime",
+    "crates/sdk",
+    "examples/rust-demo",
+    "xtask",
 ]
 
 resolver = "3"
 
+[workspace.package]
+edition = "2024"
+license = "GPL-3.0"
+rust-version = "1.85"
 
-# 公共依赖
+
 [workspace.dependencies]
+chrono = { version = "0.4.42", default-features = true }
+clap = { version = "4.5.51", features = ["derive"] }
+thiserror = "2.0.17"
 tokio = { version = "1.48.0", features = ["full"] }
 slint = "=1.15.1"
 slint-build = "=1.15.1"
-uniffi = "0.30.0"
+tracing = "0.1"
+tracing-appender = "0.2"
+tracing-subscriber = { version = "0.3", features = ["fmt", "registry"] }
 
-# 优化打包体积
+[workspace.lints.rust]
+unsafe_code = "deny"
+
+[workspace.lints.clippy]
+dbg_macro = "deny"
+
 [profile.release]
-opt-level = "z"        # 体积优先优化（"s" 次之，"z" 更小）
-lto = true             # 启用链接时优化 (Link Time Optimization)
-codegen-units = 1      # 降低并行代码生成数，提升优化效果
-panic = "abort"        # 避免引入 unwinding 代码
-strip = true           # 编译完成后去掉符号表（等同于手动 strip）
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true

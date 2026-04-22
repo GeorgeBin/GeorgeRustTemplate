@@ -2,15 +2,15 @@
 
 Rust workspace 模板工程
 
-包含：
+当前工作区采用 `base/ + crates/ + examples/ + xtask/` 结构：
 
-- `baselib`：纯 Rust 基础功能库：核心功能，尽量减少外部依赖
-- `build`：打包生成的可执行文件或库文件（会被 Git 忽略）
-- `corelib`：纯 Rust 核心逻辑层
-- `demo`：桌面端模板，基于 Slint，dashboard 样式
-- `platforms`：跨语言桥接层
-- `samples`： 各个平台的使用示例（Android、ohos、iOS 等）
-- `unleash`：打包与发布
+- `base/`：基础能力层，当前包含 `base/error`、`base/log`、`base/types`、`base/utils`
+- `crates/`：内部主链路，当前包含 `template-model`、`template-core`、`template-runtime`、`template-sdk`
+- `examples/rust-demo`：桌面示例工程，包名仍为 `demo`
+- `xtask/`：构建与打包编排入口
+- `build/`：生成产物目录（Git 忽略）
+
+历史上的 `unleash/` 脚本目录已经下线，仓库内统一通过 `cargo xtask ...` 管理构建与打包。
 
 
 
@@ -28,7 +28,7 @@ Rust workspace 模板工程
 
 ```shell
 # 运行正式桌面端
-cargo run -p demo
+cargo xtask run-demo
 
 # 工作区自检
 just check
@@ -59,17 +59,16 @@ cargo clippy --workspace --all-targets -- -D warnings
 主要位置：
 
 - 根工作区配置：`Cargo.toml`
-- 桌面端元数据：`demo/Cargo.toml`
-- 移动端绑定配置：`shared/uniffi.toml`
+- 桌面端元数据：`examples/rust-demo/Cargo.toml`
 
 
 
 ## 工程结构
 
-`demo` 目录约定：
+`examples/rust-demo` 目录约定：
 
 ```lua
-demo
+examples/rust-demo
  ├── assets
  │    ├── font
  │    ├── i18n
@@ -150,19 +149,8 @@ build/x86_64-unknown-linux-gnu/release/rpm/demo-v0.0.2.rpm
 说明：
 
 - `just build-rpm` 仅适用于 Linux 原生环境。
-- 在 macOS 上生成 Linux RPM 时，使用 `cargo-zigbuild` 交叉编译 `x86_64-unknown-linux-gnu`，并通过 `demo/packaging/linux/generate-rpm-cross.toml` 显式引用 Linux ELF 产物。
+- 在 macOS 上生成 Linux RPM 时，使用 `cargo-zigbuild` 交叉编译 `x86_64-unknown-linux-gnu`，并通过 `examples/rust-demo/packaging/linux/generate-rpm-cross.toml` 显式引用 Linux ELF 产物。
 - `just build-rpm` 会保留 `target/generate-rpm/` 下的默认产物；`just build-rpm-linux` 会保留 `target/x86_64-unknown-linux-gnu/generate-rpm/` 下的交叉打包产物，并额外复制一份到 `build/x86_64-unknown-linux-gnu/release/rpm/demo-v<version>.rpm`。
 - 当前 macOS 交叉打包默认使用 `--auto-req disabled`，避免依赖 Linux `ldd`/`find-requires` 工具；如果需要发布到更严格的 RPM 环境，后续应补充手工依赖元数据。
 
-Android：
-
-```shell
-just build-shared-android
-just gen-shared-kotlin
-```
-
-Android 侧额外依赖：
-
-```gradle
-implementation "net.java.dev.jna:jna:5.12.0@aar"
-```
+当前 Android/UniFFI 绑定链路已冻结，待后续 `bindings/*` 阶段再恢复。

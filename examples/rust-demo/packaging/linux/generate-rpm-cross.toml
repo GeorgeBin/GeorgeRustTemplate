@@ -1,0 +1,18 @@
+summary = "A lightweight native desktop shell built with Rust and Slint."
+release = "1"
+requires = { fontconfig = "*" }
+
+[[assets]]
+source = "target/x86_64-unknown-linux-gnu/release/demo"
+dest = "/usr/bin/demo"
+mode = "0755"
+
+[[assets]]
+source = "examples/rust-demo/packaging/linux/demo.desktop"
+dest = "/usr/share/applications/demo.desktop"
+mode = "0644"
+
+[[assets]]
+source = "examples/rust-demo/assets/logo/logo.png"
+dest = "/usr/share/icons/hicolor/256x256/apps/demo.png"
+mode = "0644"
