@@ -3,6 +3,10 @@ use alloc::string::String;
 use crate::{LogLevel, LogRecord, Logger};
 
 /// Convenience helpers for constructing and emitting simple log records.
+///
+/// These helpers only build basic [`LogRecord`] values and do not
+/// automatically capture source location metadata. Call sites that need source
+/// location should construct records explicitly or use future helper layers.
 pub trait LoggerExt: Logger {
     /// Emits an error record with the given target and message.
     fn error(&self, target: &'static str, message: impl Into<String>) {

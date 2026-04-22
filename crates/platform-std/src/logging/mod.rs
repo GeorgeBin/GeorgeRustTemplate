@@ -1,3 +1,10 @@
+//! Default logging implementation for the std runtime.
+//!
+//! This module provides tracing subscriber installation, file output,
+//! retention cleanup, rollover, and runtime logging adjustments. It is a
+//! concrete platform layer and not part of the cross-platform logging
+//! protocol.
+
 mod adapter;
 mod cleanup;
 mod config;

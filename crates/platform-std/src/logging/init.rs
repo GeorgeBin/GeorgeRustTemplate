@@ -108,6 +108,11 @@ impl<S: Subscriber> Filter<S> for RuntimeFilter {
     }
 }
 
+/// Runtime handle for the process-wide std/tracing logging backend.
+///
+/// This handle exists only after the application installs the global tracing
+/// subscriber. It is intended for binaries and app shells; library crates
+/// should not install or own process-wide logging during normal operation.
 pub struct StdLoggingHandle {
     state: RuntimeState,
     file_config: Mutex<FileLogConfig>,
@@ -210,6 +215,10 @@ impl StdLoggingHandle {
     }
 }
 
+/// Installs the process-wide global tracing subscriber for the std backend.
+///
+/// This function is intended for binaries, demos, and app shells. Library
+/// crates should not call this during normal operation.
 pub fn install_global_tracing(
     config: StdLogConfig,
 ) -> Result<&'static StdLoggingHandle, StdLogInstallError> {
@@ -273,6 +282,11 @@ pub fn install_global_tracing(
         .expect("logging handle must be available after initialization"))
 }
 
+/// Returns the installed process-wide std logging handle, if initialization has run.
+///
+/// This accessor is intended for binaries and app shells coordinating global
+/// logging state. Library crates should not depend on process-wide logging
+/// initialization.
 pub fn global_logging() -> Option<&'static StdLoggingHandle> {
     LOGGING_RUNTIME.get()
 }

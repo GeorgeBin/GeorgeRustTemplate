@@ -2,8 +2,7 @@
 
 use george_base_log::LogLevel;
 use george_platform_std::{
-    CleanupConfig, ConsoleLogConfig, FileLogConfig, StdLogConfig, cleanup_old_logs,
-    install_global_tracing,
+    CleanupConfig, ConsoleLogConfig, FileLogConfig, StdLogConfig, install_global_tracing,
 };
 #[cfg(target_os = "macos")]
 use slint::winit_030::winit::platform::macos::WindowAttributesExtMacOS;
@@ -70,14 +69,6 @@ async fn initialize_app_state() -> Arc<Mutex<AppState>> {
     let logging_config = build_logging_config(&settings);
     let logging_system =
         install_global_tracing(logging_config.clone()).expect("Failed to initialize logging");
-    cleanup_old_logs(
-        &logging_config.file,
-        &CleanupConfig {
-            enabled: true,
-            max_retention_days: settings.log_days as u16,
-        },
-    )
-    .expect("Failed to clean up expired logs");
 
     info!("Starting {} (ID: {})...", APP_NAME, APP_ID);
 
