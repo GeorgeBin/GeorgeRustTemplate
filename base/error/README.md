@@ -171,6 +171,9 @@ DDSSRRR
 | `06` | Callback / Threading |
 | `07` | Env / Path / Process |
 
+说明：
+`PLATFORM_JNI_CALLBACK_THREAD_UNAVAILABLE` 归入 `JNI / Android` 子域，使用 `0702001`；`Callback / Threading` 预留给平台通用的回调/线程桥接错误。
+
 ---
 
 ## 6. 核心类型设计

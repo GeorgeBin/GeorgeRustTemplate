@@ -169,7 +169,7 @@ fn catalog_formal_descriptors_have_expected_fields() {
 
     assert_eq!(
         PLATFORM_JNI_CALLBACK_THREAD_UNAVAILABLE.code,
-        ErrorCode::from_parts(7, 6, 1)
+        ErrorCode::from_parts(7, 2, 1)
     );
     assert_eq!(
         PLATFORM_JNI_CALLBACK_THREAD_UNAVAILABLE.name,
