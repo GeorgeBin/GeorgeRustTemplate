@@ -4928,6 +4928,9 @@ dependencies = [
 [[package]]
 name = "template-runtime"
 version = "0.1.0"
+dependencies = [
+ "george-base-log",
+]
 
 [[package]]
 name = "template-sdk"
