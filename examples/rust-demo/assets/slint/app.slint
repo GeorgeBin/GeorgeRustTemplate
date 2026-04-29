@@ -4,7 +4,6 @@ import { Sidebar } from "components/sidebar.slint";
 import { ModalManager } from "components/modal_manager.slint";
 import { MainView } from "views/main_view.slint";
 import { RustExamplesView } from "views/rust_examples_view.slint";
-import { NtpView } from "views/ntp_view.slint";
 import { SettingsView } from "views/settings_view.slint";
 import { AboutView } from "views/about_view.slint";
 
@@ -24,9 +23,6 @@ export component AppWindow inherits Window {
     in property <bool> show_window_controls: false;
     in-out property <bool> sidebar_collapsed: false;
     private property <bool> auto_sidebar_collapsed: false;
-    in-out property <string> ntp_host: "ntp.aliyun.com";
-    in-out property <string> ntp_result: "";
-    in-out property <bool> ntp_loading: false;
     in-out property <int> example_counter: 42;
     in-out property <string> example_status: "";
     in-out property <string> ui_language: "auto";
@@ -47,7 +43,6 @@ export component AppWindow inherits Window {
 
     callback select_tab(int);
     callback open_url(string);
-    callback request_ntp_time();
     callback example_increment();
     callback example_report_counter(int);
     callback example_add_ten(int) -> int;
@@ -144,16 +139,7 @@ export component AppWindow inherits Window {
                             }
                         }
 
-                        if (selected_tab == 2): NtpView {
-                            ntp_host <=> root.ntp_host;
-                            ntp_result <=> root.ntp_result;
-                            ntp_loading <=> root.ntp_loading;
-                            request-ntp => {
-                                root.request_ntp_time();
-                            }
-                        }
-
-                        if (selected_tab == 3): SettingsView {
+                        if (selected_tab == 2): SettingsView {
                             ui_language <=> root.ui_language;
                             theme_options <=> root.theme_options;
                             selected_theme_index <=> root.selected_theme_index;
@@ -177,7 +163,7 @@ export component AppWindow inherits Window {
                             }
                         }
 
-                        if (selected_tab == 4): AboutView {
+                        if (selected_tab == 3): AboutView {
                             open_url(url) => {
                                 root.open_url(url);
                             }

@@ -4913,17 +4913,10 @@ dependencies = [
 [[package]]
 name = "template-core"
 version = "0.1.0"
-dependencies = [
- "george-base-types",
- "template-model",
-]
 
 [[package]]
 name = "template-model"
 version = "0.1.0"
-dependencies = [
- "george-base-types",
-]
 
 [[package]]
 name = "template-runtime"
@@ -4936,8 +4929,6 @@ dependencies = [
 name = "template-sdk"
 version = "0.1.0"
 dependencies = [
- "template-core",
- "template-model",
  "template-runtime",
 ]
 

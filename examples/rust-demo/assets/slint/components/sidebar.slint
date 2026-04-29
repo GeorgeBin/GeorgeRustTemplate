@@ -79,48 +79,22 @@ export component Sidebar inherits Rectangle {
             }
 
             SidebarItem {
-                icon: "\u{E890}";
-                text: AppI18n.t("sidebar.ntp", [AppI18n.version]);
+                icon: "\u{E713}";
+                text: AppI18n.t("sidebar.settings", [AppI18n.version]);
                 selected: selected_tab == 2;
                 collapsed: root.collapsed;
                 clicked => {
                     root.tab_selected(2);
                 }
             }
-        }
-
-        VerticalLayout {
-            spacing: 4px;
-            alignment: start;
-
-            Rectangle {
-                height: 8px;
-            }
-
-            Rectangle {
-                x: 4px;
-                width: parent.width - 8px;
-                height: 1px;
-                background: Theme.border_color;
-            }
-
-            SidebarItem {
-                icon: "\u{E713}";
-                text: AppI18n.t("sidebar.settings", [AppI18n.version]);
-                selected: selected_tab == 3;
-                collapsed: root.collapsed;
-                clicked => {
-                    root.tab_selected(3);
-                }
-            }
 
             SidebarItem {
                 icon: "\u{E946}";
                 text: AppI18n.t("sidebar.about", [AppI18n.version]);
-                selected: selected_tab == 4;
+                selected: selected_tab == 3;
                 collapsed: root.collapsed;
                 clicked => {
-                    root.tab_selected(4);
+                    root.tab_selected(3);
                 }
             }
         }

@@ -314,7 +314,6 @@ rust-template/
 
 不应放：
 
-- `NtpConfig`
 - `PttEvent`
 - `RtcSessionInfo`
 
@@ -735,7 +734,6 @@ cargo build --workspace
 
 - `george-base-error`
 - `george-base-log`
-- `ntp-core`
 - `ptt-runtime`
 - `rtc-binding-uniffi`
 

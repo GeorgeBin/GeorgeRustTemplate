@@ -1,22 +1,8 @@
 [sidebar]
 home = "首页"
 rust_examples = "Rust 示例"
-ntp = "NTP"
 settings = "设置"
 about = "关于"
-
-[ntp]
-title = "NTP 查询工具"
-description = "在桌面壳中查询 NTP 服务器，并显示返回的服务器时间。"
-server_label = "NTP 服务器"
-server_placeholder = "输入主机名或 host:port"
-query = "查询时间"
-querying = "查询中..."
-result_idle = "输入服务器地址后开始查询。"
-empty_host = "请输入 NTP 服务器地址。"
-success = "查询成功：{0}"
-failure = "查询失败：{0}"
-unavailable = "当前桌面示例中的 NTP 查询已暂时停用，待 runtime/transport 实现接回后恢复。"
 
 [rust_examples]
 title = "Rust 示例"

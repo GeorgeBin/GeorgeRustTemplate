@@ -8,15 +8,10 @@
 
 ## 边界
 
-与 `george-base-types` 的边界：
+与 `base/*` 的边界：
 
-- `george-base-types` 放平台无关、跨 crate 复用的小型值对象
+- `base/*` 放平台无关、跨 crate 复用的小型值对象和协议
 - `crates/model` 放某个产品或能力域自己的公开 request / response / params / state 模型
-
-因此：
-
-- `NonEmptyString` 这类基础值对象属于 `george-base-types`
-- `NtpRequest`、`NtpResponse` 这类领域公开模型属于 `crates/model`
 
 与 `core` / `runtime` / `sdk` / `bindings` 的边界：
 
@@ -37,41 +32,13 @@
 
 ## 当前首版范围
 
-当前只收敛两个模块：
+当前只保留：
 
 - `common`
-- `ntp`
 
-其中：
+`common/` 只做最小预留，用于未来承载多个领域共享、但又不适合进入 `base/*` 的领域公共模型。在出现真实共享模型之前，不应把它当成杂物入口。
 
-- `common/` 只做最小预留，用于未来承载多个领域共享、但又不适合进入 `base/types` 的领域公共模型；在出现真实共享模型之前，不应把它当成杂物入口
-- `ntp/` 提供稳定的 NTP 请求与响应模型
-
-## 为什么 `NtpResponse` 不再暴露 `SystemTime`
-
-`SystemTime` 适合运行时内部计算，但不适合作为领域公开模型字段长期外露。
-
-这里改为：
-
-- `server_unix_millis: u64`
-- `round_trip_millis: Option<u32>`
-
-原因很直接：
-
-- 更容易被 `sdk`、`bindings`、日志和测试共同解释
-- 更容易跨 crate、跨语言传递
-- 避免把运行时类型直接扩散到模型层
-
-## 当前保持克制的字段设计
-
-`NtpRequest` 目前继续使用：
-
-- `port: u16`
-- `timeout_millis: u32`
-
-这不是遗漏建模，而是首版刻意保持克制。
-
-如果后续多个领域模块都重复出现端口、超时等字段，再考虑把 `PortNumber`、`TimeoutMillis` 这类值对象下沉到 `george-base-types`。
+模板当前不内置任何具体业务模型。新增产品能力时，应按能力域创建清晰模块，并只放对外稳定的语义类型。
 
 ## 推荐放什么 / 不放什么
 
@@ -97,10 +64,6 @@ crates/model/
 ├── README.md
 └── src/
     ├── lib.rs
-    ├── common/
-    │   └── mod.rs
-    └── ntp/
-        ├── mod.rs
-        ├── request.rs
-        └── response.rs
+    └── common/
+        └── mod.rs
 ```

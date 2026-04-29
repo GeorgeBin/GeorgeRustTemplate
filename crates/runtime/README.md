@@ -35,16 +35,16 @@ This crate is not a service locator. It should not grow a generic object
 registry, global resource map, task manager, shutdown system, or transport
 collection until a concrete runtime requirement proves that shape is necessary.
 
-## Why NTP Is Not Here
+## Why Demo Features Are Not Here
 
-NTP is a demo capability in this template, not a foundation for every future
-application built from it.
+Demo capabilities are not foundations for every future application built from
+this template.
 
-Putting NTP transport or network client code in the runtime skeleton would make
-the template look like an NTP runtime instead of a reusable runtime holder. When
-NTP or another demo feature needs a concrete implementation, add a focused
-adapter module that implements the corresponding `core` port and receives its
-resources explicitly.
+Putting demo transport or client code in the runtime skeleton would make the
+template look like a product-specific runtime instead of a reusable runtime
+holder. When a concrete feature needs an implementation, add a focused adapter
+module that implements the corresponding `core` port and receives its resources
+explicitly.
 
 ## Relationship With `george-platform-std`
 

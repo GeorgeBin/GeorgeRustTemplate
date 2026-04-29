@@ -2,7 +2,7 @@
 
 ## 1. 文档定位
 
-本文档定义一个 **面向长期演进的 Rust 跨平台库模板工程**，其核心目标不是服务某一个具体业务，而是作为一套可复用的工程骨架，承载后续的 `ntp`、`ptt`、`rtc`、`media`、`device` 等不同领域 SDK。
+本文档定义一个 **面向长期演进的 Rust 跨平台库模板工程**，其核心目标不是服务某一个具体业务，而是作为一套可复用的工程骨架，承载后续不同领域 SDK。
 
 该模板需要同时满足两类使用场景：
 
@@ -308,7 +308,7 @@ rust-template/
 
 约束：
 
-- 不存放 `NtpConfig`、`PttEvent`、`RtcSessionState` 这类领域类型
+- 不存放具体业务配置、事件或会话状态这类领域类型
 
 ## 6.5 `base/utils`
 
@@ -383,14 +383,6 @@ rust-template/
 - 领域 DTO
 - 领域状态枚举
 - 对外稳定的公共类型
-
-例如对于 NTP：
-
-- `NtpConfig`
-- `NtpRequest`
-- `NtpResponse`
-- `NtpEvent`
-- `NtpStatus`
 
 例如对于 PTT：
 
@@ -914,7 +906,6 @@ V2 仅补充以下建议。
 例如：
 
 - `george-base-error`
-- `ntp-core`
 - `ptt-runtime`
 - `rtc-binding-uniffi`
 

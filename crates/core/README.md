@@ -14,7 +14,7 @@
 
 ## 不负责什么
 
-- `std::net::UdpSocket` 或任何真实 socket I/O
+- 真实 socket I/O、文件 I/O 或平台 API 调用
 - `SystemTime` 作为公开领域返回值
 - tracing subscriber、平台代码、FFI、UI
 - runtime 调度、线程模型、异步驱动
@@ -28,17 +28,8 @@
 - `template-sdk` 对 Rust 用户暴露更友好的 facade
 - `bindings/*` 处理跨语言边界
 
-## 为什么 NTP 的 std 网络实现必须移出 core
+## 当前首版范围
 
-旧实现把 UDP 通信、协议解析、错误和用例逻辑都堆在 `core`，导致 core 直接依赖 std 网络和运行时时间类型。
+当前模板不内置任何具体业务用例。
 
-这会让核心层失去可替换性和可测试性，也让 runtime 与平台层没有明确接入点。
-
-现在 `ntp` 模块拆成：
-
-- `error`：核心语义错误
-- `parser`：纯 NTP 响应解析
-- `port`：NTP 传输端口抽象
-- `service`：NTP 核心用例服务
-
-这样 core 只保留规则和编排，真实网络实现可以迁移到 runtime 或更外层。
+新增能力时，先在 `model` 定义稳定公开模型，再在 `core` 定义核心服务和外部端口。真实平台实现应放在 `runtime`、`platform-*` 或应用壳层中，而不是直接写入 `core`。
