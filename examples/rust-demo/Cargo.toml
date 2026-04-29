@@ -25,7 +25,6 @@ expiry-check = []
 [dependencies]
 george-base-log = { path = "../../base/log" }
 george-platform-std = { path = "../../crates/platform-std" }
-template-sdk = { path = "../../crates/sdk" }
 slint = { version = "=1.15.1", default-features = false, features = ["std", "backend-winit", "renderer-femtovg", "renderer-software", "accessibility", "compat-1-2", "unstable-winit-030"] }
 tokio = { version = "1.48.0", features = ["rt-multi-thread", "macros", "sync", "time", "process", "io-util"] }
 tracing = { workspace = true }

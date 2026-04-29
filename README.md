@@ -5,12 +5,14 @@ Rust workspace 模板工程
 当前工作区采用 `base/ + crates/ + examples/ + xtask/` 结构：
 
 - `base/`：基础能力层，当前包含 `base/error`、`base/log`、`base/types`、`base/utils`
-- `crates/`：内部主链路，当前包含 `template-model`、`template-core`、`template-runtime`、`template-sdk`
+- `crates/`：内部主链路，当前包含 `template-model`、`template-core`、`template-runtime`、`template-sdk`、`george-platform-std`
 - `examples/rust-demo`：桌面示例工程，包名仍为 `demo`
 - `xtask/`：构建与打包编排入口
 - `build/`：生成产物目录（Git 忽略）
 
 历史上的 `unleash/` 脚本目录已经下线，仓库内统一通过 `cargo xtask ...` 管理构建与打包。
+
+当前架构基线以 `docs/1-design/ARCHITECTURE_v3.md` 为准；旧版架构文档仅作为历史参考。
 
 
 

@@ -1,5 +1,7 @@
 # RustTemplate 架构设计（V2）
 
+> Deprecated: 当前工程架构基线已经迁移到 `docs/1-design/ARCHITECTURE_v3.md`。本文档仅保留为历史参考，不再作为后续工程修正依据。
+
 ## 1. 文档定位
 
 本文档定义一个 **面向长期演进的 Rust 跨平台库模板工程**，其核心目标不是服务某一个具体业务，而是作为一套可复用的工程骨架，承载后续不同领域 SDK。
@@ -220,7 +222,8 @@ rust-template/
 │   ├── integration/
 │   └── ffi-smoke/
 ├── docs/
-│   ├── ARCHITECTURE.md
+│   ├── 1-design/
+│   │   └── ARCHITECTURE_v3.md
 │   ├── WORKSPACE.md
 │   ├── ERRORS.md
 │   ├── API.md
@@ -1083,7 +1086,7 @@ V2 仅补充以下建议。
 - 统一错误模型
 - 单向依赖
 
-这些在你现有 ARCHITECTURE.md 中已经是正确方向。
+这些在当前架构基线中已经是正确方向。
 
 ### 应增强的部分
 

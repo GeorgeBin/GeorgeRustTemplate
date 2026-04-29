@@ -4,9 +4,9 @@
 
 本文档用于定义 **RustTemplate 模板工程的 workspace 组织方式、crate 边界、依赖规则、构建约束与演进方式**。
 
-本文件是 `ARCHITECTURE.md` 的工程落地补充文档。
+本文件是当前架构基线 `docs/1-design/ARCHITECTURE_v3.md` 的工程落地补充文档。
 
-- `ARCHITECTURE.md` 解决：为什么这样分层、总体架构如何设计
+- `docs/1-design/ARCHITECTURE_v3.md` 解决：为什么这样分层、总体架构如何设计
 - `WORKSPACE.md` 解决：目录如何落地、crate 如何组织、依赖如何约束、开发如何推进
 
 本文档默认面向如下目标：
@@ -122,7 +122,8 @@ rust-template/
 │   ├── sdk/
 │   └── ffi-common/
 ├── docs/
-│   ├── ARCHITECTURE.md
+│   ├── 1-design/
+│   │   └── ARCHITECTURE_v3.md
 │   ├── WORKSPACE.md
 │   ├── ERRORS.md
 │   ├── API.md
@@ -244,7 +245,7 @@ rust-template/
 
 建议长期维护以下文档：
 
-- `ARCHITECTURE.md`
+- `docs/1-design/ARCHITECTURE_v3.md`
 - `WORKSPACE.md`
 - `ERRORS.md`
 - `API.md`
@@ -714,7 +715,7 @@ cargo build --workspace
 
 每份文档都要有清晰边界：
 
-- `ARCHITECTURE.md`：总体架构与设计原则
+- `docs/1-design/ARCHITECTURE_v3.md`：总体架构与设计原则
 - `WORKSPACE.md`：工程组织与依赖规则
 - `ERRORS.md`：错误码、错误语义、错误映射
 - `API.md`：对外接口说明
@@ -767,7 +768,7 @@ cargo build --workspace
 - `crates/runtime`
 - `crates/sdk`
 - `examples/rust-basic`
-- `docs/ARCHITECTURE.md`
+- `docs/1-design/ARCHITECTURE_v3.md`
 - `docs/WORKSPACE.md`
 
 ### 第二批再建
@@ -817,4 +818,4 @@ RustTemplate 的 workspace 应遵循以下主线：
 - 先稳定 `base/platform/model/core/runtime/sdk` 主链路
 - 再逐步扩展 FFI、bindings、xtask、平台产物
 
-如果 `ARCHITECTURE.md` 解决的是“架构正确性”，那么 `WORKSPACE.md` 解决的就是“工程可执行性”。
+如果 `docs/1-design/ARCHITECTURE_v3.md` 解决的是“架构正确性”，那么 `WORKSPACE.md` 解决的就是“工程可执行性”。
